@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="antheneum.client/antheneum.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Antheneum.Server/Antheneum.Server.csproj" />
+</Solution>
