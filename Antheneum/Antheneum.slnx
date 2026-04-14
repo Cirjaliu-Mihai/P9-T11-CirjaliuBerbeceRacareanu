@@ -1,7 +1,12 @@
 <Solution>
+  <Folder Name="/Antheneum.Server/">
+    <Project Path="Antheneum.Server/API/API.csproj" />
+    <Project Path="Antheneum.Server/Application/Application.csproj" Id="70f9d499-7589-4e66-929d-e8c310032c9d" />
+    <Project Path="Antheneum.Server/Domain/Domain.csproj" Id="de68a61e-f155-41ef-9857-603507544e4e" />
+    <Project Path="Antheneum.Server/Infrastructure/Infrastructure.csproj" Id="c002987c-6f63-4933-9583-688184f2dbc4" />
+  </Folder>
   <Project Path="antheneum.client/antheneum.client.esproj">
     <Build />
     <Deploy />
   </Project>
-  <Project Path="Antheneum.Server/Antheneum.Server.csproj" />
 </Solution>

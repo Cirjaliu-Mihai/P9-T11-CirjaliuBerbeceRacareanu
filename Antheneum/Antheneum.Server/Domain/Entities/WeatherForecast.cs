@@ -1,4 +1,4 @@
-namespace Antheneum.Server
+namespace Domain.Entities
 {
     public class WeatherForecast
     {

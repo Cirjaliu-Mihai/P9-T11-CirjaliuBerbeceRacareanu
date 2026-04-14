@@ -17,6 +17,9 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Add MediatR and tell it to look for Handlers in the Application assembly
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
