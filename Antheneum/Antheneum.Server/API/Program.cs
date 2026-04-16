@@ -1,3 +1,5 @@
+using Infrastructure;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,9 +19,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Add MediatR and tell it to look for Handlers in the Application assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
 
+builder.Services.AddInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 app.UseDefaultFiles();

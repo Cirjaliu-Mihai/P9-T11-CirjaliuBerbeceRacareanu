@@ -1,4 +1,4 @@
-using Application.Weather.Queries.GetWeatherForecast;
+using Application.Features.Weather.GetWeatherForecast;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
