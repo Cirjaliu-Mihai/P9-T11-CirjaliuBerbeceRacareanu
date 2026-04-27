@@ -269,6 +269,13 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("username");
+
+            entity.Property(e => e.Refreshtoken)
+                .HasColumnName("refreshtoken");
+
+            entity.Property(e => e.Refreshtokenexpiry)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("refreshtokenexpiry");
         });
 
         OnModelCreatingPartial(modelBuilder);

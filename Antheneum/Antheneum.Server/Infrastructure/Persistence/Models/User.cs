@@ -17,6 +17,10 @@ public partial class User
 
     public string? Address { get; set; }
 
+    public string? Refreshtoken { get; set; }
+
+    public DateTime? Refreshtokenexpiry { get; set; }
+
     public virtual ICollection<Administrator> Administrators { get; set; } = new List<Administrator>();
 
     public virtual ICollection<Reader> Readers { get; set; } = new List<Reader>();

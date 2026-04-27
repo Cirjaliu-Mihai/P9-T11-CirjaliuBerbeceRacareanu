@@ -1,4 +1,7 @@
+using Application;
+using API.Middleware;
 using Infrastructure;
+using MediatR;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -19,8 +22,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(DependencyInjection).Assembly));
 builder.Services.AddInfrastructure(builder.Configuration);
 var app = builder.Build();
 
@@ -35,8 +38,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
