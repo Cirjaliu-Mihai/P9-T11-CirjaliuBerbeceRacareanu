@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, signal } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { WeatherForecast } from '../interfaces/weather-forecast';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 @Component({
   selector: 'app-root',
@@ -12,17 +14,17 @@ import { WeatherForecast } from '../interfaces/weather-forecast';
 export class App implements OnInit {
   public forecasts: WeatherForecast[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.getForecasts();
   }
 
-  getForecasts() {
+  async getForecasts() {
     this.http.get<WeatherForecast[]>('https://localhost:7293/weatherforecast').subscribe(
       (result) => {
         this.forecasts = result;
-        console.log(this.forecasts);
+        this.cdr.detectChanges();
       },
       (error) => {
         console.error(error);
