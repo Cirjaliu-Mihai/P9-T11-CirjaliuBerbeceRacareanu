@@ -1,12 +1,13 @@
 using Application.DTOs.Auth;
 using Application.Features.Auth.Login;
-using Application.Features.Auth.PromoteToAdministrator;
+using Application.Features.Auth.Logout;
 using Application.Features.Auth.RefreshToken;
 using Application.Features.Auth.Register;
-using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -37,20 +38,26 @@ public sealed class AuthController : ControllerBase
         return Created(string.Empty, response);
     }
 
-    [HttpPost("users/{userId:int}/promote")]
-    [Authorize(Roles = nameof(Role.Administrator))]
-    public async Task<IActionResult> PromoteToAdministrator(int userId, CancellationToken cancellationToken)
-    {
-        await _mediator.Send(new PromoteToAdministratorQuery(userId), cancellationToken);
-        return NoContent();
-    }
-
     [HttpPost("refresh")]
     [AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenQuery query, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(query, cancellationToken);
         return Ok(response);
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(sub, out var userId))
+            return Unauthorized();
+
+        await _mediator.Send(new LogoutQuery(userId), cancellationToken);
+        return NoContent();
     }
 }
 
