@@ -1,11 +1,11 @@
 using Application.DTOs.Auth;
+using Application.Helpers;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
 using MediatR;
-using System.Security.Cryptography;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Application.Features.Auth.Register
 {
@@ -27,6 +27,12 @@ namespace Application.Features.Auth.Register
 
         public async Task<AuthResponse> Handle(RegisterQuery request, CancellationToken cancellationToken)
         {
+            SanitizeInput(request.Username, nameof(request.Username));
+            SanitizeInput(request.Email, nameof(request.Email));
+            SanitizeInput(request.Password, nameof(request.Password));
+            if (request.Phone is not null) SanitizeInput(request.Phone, nameof(request.Phone));
+            if (request.Address is not null) SanitizeInput(request.Address, nameof(request.Address));
+
             ValidatePassword(request.Password);
 
             if (await _userRepository.UsernameExistsAsync(request.Username, cancellationToken))
@@ -53,16 +59,20 @@ namespace Application.Features.Auth.Register
             var token = _tokenService.GenerateToken(createdUser);
 
             var refreshToken = _tokenService.GenerateRefreshToken();
-            var refreshTokenHash = HashToken(refreshToken);
+            var refreshTokenHash = TokenHasher.Hash(refreshToken);
             await _userRepository.StoreRefreshTokenAsync(createdUser.Id, refreshTokenHash, DateTime.UtcNow.AddDays(7), cancellationToken);
 
             return new AuthResponse(token, refreshToken, createdUser.Username, createdUser.Role.ToString());
         }
 
-        private static string HashToken(string token)
+        private static readonly Regex XssPattern = new(
+            @"<[^>]*>|javascript\s*:|on\w+\s*=|&[#\w]+;",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static void SanitizeInput(string value, string fieldName)
         {
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
-            return Convert.ToBase64String(bytes);
+            if (XssPattern.IsMatch(value))
+                throw new ArgumentException($"{fieldName} contains invalid characters.");
         }
 
         private static void ValidatePassword(string password)

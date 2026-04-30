@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces;
 using Domain.Enums;
 using Domain.Interfaces;
+using Infrastructure.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,9 +20,11 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration["PostgresConnection"]));
 
+        services.AddMemoryCache();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
+        services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
 
         var secret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("JWT secret is not configured.");
