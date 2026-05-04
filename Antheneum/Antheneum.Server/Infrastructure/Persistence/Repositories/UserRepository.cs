@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-internal sealed class UserRepository : IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;

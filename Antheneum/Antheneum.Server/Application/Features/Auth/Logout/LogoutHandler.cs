@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Features.Auth.Logout;
 
-public sealed class LogoutHandler : IRequestHandler<LogoutQuery>
+public class LogoutHandler : IRequestHandler<LogoutQuery>
 {
     private readonly IUserRepository _userRepository;
 

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Services;
 
-internal sealed class LoginAttemptTracker : ILoginAttemptTracker
+public class LoginAttemptTracker : ILoginAttemptTracker
 {
     private const int MaxFailedAttempts = 5;
     private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);

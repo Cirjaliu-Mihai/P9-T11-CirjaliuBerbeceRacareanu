@@ -3,7 +3,7 @@ using Domain.Exceptions;
 
 namespace Domain.Entities
 {
-    public sealed class UserModel
+    public class UserModel
     {
         public int Id { get; private set; }
         public string Username { get; private set; } = string.Empty;

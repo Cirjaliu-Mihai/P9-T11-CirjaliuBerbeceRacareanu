@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace API.Middleware;
 
-public sealed class RequestLoggingMiddleware
+public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<RequestLoggingMiddleware> _logger;

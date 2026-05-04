@@ -14,6 +14,7 @@ public partial class Book
     public string? Authors { get; set; }
 
     public string? Publisher { get; set; }
+    public string? ImgUrl { get; set; }
 
     public virtual ICollection<Bookcopy> Bookcopies { get; set; } = new List<Bookcopy>();
 }

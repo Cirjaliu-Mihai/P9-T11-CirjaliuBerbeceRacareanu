@@ -4,6 +4,7 @@ using Domain.Interfaces;
 using Infrastructure.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,16 +16,18 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration["PostgresConnection"]));
 
         services.AddMemoryCache();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
+        services.AddSingleton<IFileStorageService>(_ => new LocalFileStorageService(env));
 
         var secret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("JWT secret is not configured.");

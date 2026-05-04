@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Infrastructure.Services;
 
-internal sealed class TokenService : ITokenService
+public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
 

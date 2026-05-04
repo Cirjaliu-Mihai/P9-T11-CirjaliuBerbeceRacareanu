@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace API.Middleware;
 
-public sealed class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
@@ -41,6 +41,11 @@ public sealed class ExceptionHandlingMiddleware
             case DomainException:
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response = new { status = (int)HttpStatusCode.BadRequest, message = exception.Message };
+                break;
+
+            case ConflictException:
+                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                response = new { status = (int)HttpStatusCode.Conflict, message = exception.Message };
                 break;
 
             case UnauthorizedAccessException:
