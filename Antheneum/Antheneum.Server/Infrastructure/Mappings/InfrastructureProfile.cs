@@ -1,3 +1,4 @@
+using Application.DTOs.Loans;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -29,6 +30,19 @@ namespace Infrastructure.Mappings
             CreateMap<Bookcopy, BookAvailabilityModel>()
                 .ForMember(dest => dest.CopyId, opt => opt.MapFrom(src => src.Copyid))
                 .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name));
+
+            CreateMap<Loan, LoanModel>()
+                .ForMember(dest => dest.LoanId, opt => opt.MapFrom(src => src.Loanid))
+                .ForMember(dest => dest.CopyId, opt => opt.MapFrom(src => src.Copyid))
+                .ForMember(dest => dest.ReaderId, opt => opt.MapFrom(src => src.Readerid))
+                .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Copy.Book.Title))
+                .ForMember(dest => dest.Isbn, opt => opt.MapFrom(src => src.Copy.Book.IsbnUniquenumber))
+                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Copy.Branch.Name))
+                .ForMember(dest => dest.LoanDate, opt => opt.MapFrom(src => src.Loandate))
+                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.Duedate))
+                .ForMember(dest => dest.ActualReturnDate, opt => opt.MapFrom(src => src.Actualreturndate));
+
+            CreateMap<LoanModel, LoanDto>();
         }
     }
 }
