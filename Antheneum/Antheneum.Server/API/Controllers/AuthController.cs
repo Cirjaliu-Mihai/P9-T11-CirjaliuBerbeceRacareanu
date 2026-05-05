@@ -13,7 +13,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class AuthController : ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
 

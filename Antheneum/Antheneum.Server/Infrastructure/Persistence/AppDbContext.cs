@@ -88,6 +88,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
+            entity.Property(e => e.ImgUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imgUrl");
         });
 
         modelBuilder.Entity<Bookcopy>(entity =>
