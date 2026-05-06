@@ -1,3 +1,4 @@
+using Application.DTOs.Branches;
 using Application.DTOs.Loans;
 using AutoMapper;
 using Domain.Entities;
@@ -43,6 +44,12 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.ActualReturnDate, opt => opt.MapFrom(src => src.Actualreturndate));
 
             CreateMap<LoanModel, LoanDto>();
+
+            CreateMap<Branch, BranchModel>()
+                .ForMember(dest => dest.BranchId, opt => opt.MapFrom(src => src.Branchid))
+                .ForMember(dest => dest.UniqueNumber, opt => opt.MapFrom(src => src.Uniquenumber));
+
+            CreateMap<BranchModel, BranchDto>();
         }
     }
 }
