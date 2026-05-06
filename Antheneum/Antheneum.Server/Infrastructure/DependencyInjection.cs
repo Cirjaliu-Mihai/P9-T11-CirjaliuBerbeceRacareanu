@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ILoanRepository, LoanRepository>();
         services.AddScoped<IBranchRepository, BranchRepository>();
+        services.AddScoped<IReaderRepository, ReaderRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();

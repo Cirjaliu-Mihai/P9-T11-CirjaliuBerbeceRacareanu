@@ -1,5 +1,6 @@
 using Application.DTOs.Branches;
 using Application.DTOs.Loans;
+using Application.DTOs.Readers;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -50,6 +51,23 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.UniqueNumber, opt => opt.MapFrom(src => src.Uniquenumber));
 
             CreateMap<BranchModel, BranchDto>();
+
+            CreateMap<Reader, ReaderModel>()
+                .ForMember(dest => dest.ReaderId, opt => opt.MapFrom(src => src.Readerid))
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Userid))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.User.Phone))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
+                .ForMember(dest => dest.LibraryCardNumber, opt => opt.MapFrom(src => src.Librarycardnumber))
+                .ForMember(dest => dest.IsBlacklisted, opt => opt.MapFrom(src => src.Isblacklisted ?? false))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
+                    src.User.Administrators != null && src.User.Administrators.Any()
+                        ? Role.Administrator
+                        : Role.Reader));
+
+            CreateMap<ReaderModel, ReaderDto>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
         }
     }
 }
