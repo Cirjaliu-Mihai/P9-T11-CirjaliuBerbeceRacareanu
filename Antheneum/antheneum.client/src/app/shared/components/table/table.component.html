@@ -1,0 +1,26 @@
+<div class="table-wrapper">
+  <div class="table-loading" *ngIf="loading">Loading…</div>
+
+  <table class="table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">{{ col.label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows">
+        <td *ngFor="let col of columns">
+          <ng-container
+            *ngIf="cellTemplate; else defaultCell"
+            [ngTemplateOutlet]="cellTemplate"
+            [ngTemplateOutletContext]="{ row: row, key: col.key }"
+          ></ng-container>
+          <ng-template #defaultCell>{{ getValue(row, col.key) }}</ng-template>
+        </td>
+      </tr>
+      <tr *ngIf="rows.length === 0">
+        <td [colSpan]="columns.length" class="table__empty">{{ emptyMessage }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

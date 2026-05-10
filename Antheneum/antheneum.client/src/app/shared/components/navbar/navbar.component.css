@@ -1,0 +1,32 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar__brand {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navbar__links a {
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  opacity: 0.9;
+}
+
+.navbar__links a:hover {
+  opacity: 1;
+}

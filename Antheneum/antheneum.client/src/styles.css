@@ -1,1 +1,210 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   Global CSS Custom Properties — Antheneum Design System
+   ============================================================ */
+
+:root {
+  /* --- Colour palette --- */
+  --color-primary:       #2563eb;
+  --color-primary-dark:  #1d4ed8;
+  --color-primary-light: #dbeafe;
+
+  --color-success:       #16a34a;
+  --color-success-dark:  #14532d;
+  --color-success-light: #dcfce7;
+
+  --color-warning:       #ca8a04;
+  --color-warning-dark:  #713f12;
+  --color-warning-light: #fef9c3;
+
+  --color-danger:        #dc2626;
+  --color-danger-dark:   #7f1d1d;
+  --color-danger-light:  #fee2e2;
+
+  --color-white:         #ffffff;
+  --color-neutral-50:    #f9fafb;
+  --color-neutral-100:   #f3f4f6;
+  --color-neutral-200:   #e5e7eb;
+  --color-neutral-300:   #d1d5db;
+  --color-neutral-400:   #9ca3af;
+  --color-neutral-500:   #6b7280;
+  --color-neutral-600:   #4b5563;
+  --color-neutral-700:   #374151;
+  --color-neutral-800:   #1f2937;
+  --color-neutral-900:   #111827;
+
+  /* --- Spacing scale (4-point base) --- */
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* --- Typography scale --- */
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  --leading-tight:  1.25;
+  --leading-normal: 1.5;
+  --leading-loose:  1.75;
+
+  /* --- Border radius --- */
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   0.75rem;
+  --radius-xl:   1rem;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* --- Transitions --- */
+  --transition-fast:   150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+}
+
+/* ============================================================
+   Responsive Breakpoints (reference values for media queries)
+   sm: 640px | md: 768px | lg: 1024px | xl: 1280px | 2xl: 1536px
+   ============================================================ */
+
+/* ============================================================
+   Base / Reset
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-neutral-800);
+  background-color: var(--color-neutral-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Typography defaults --- */
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--leading-tight);
+  font-weight: var(--font-bold);
+  color: var(--color-neutral-900);
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+p {
+  line-height: var(--leading-normal);
+  color: var(--color-neutral-700);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+/* ============================================================
+   Utility Button Classes
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn--sm  { padding: var(--space-1) var(--space-3); font-size: var(--text-xs); }
+.btn--lg  { padding: var(--space-3) var(--space-6); font-size: var(--text-base); }
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+.btn--primary:hover { background: var(--color-primary-dark); border-color: var(--color-primary-dark); }
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+.btn--outline:hover { background: rgba(255, 255, 255, 0.15); }
+
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+  border-color: var(--color-danger);
+}
+.btn--danger:hover { background: var(--color-danger-dark); }
+
+/* ============================================================
+   Responsive helpers
+   ============================================================ */
+
+@media (max-width: 640px) {   /* sm */
+  .hide-sm { display: none; }
+}
+
+@media (max-width: 768px) {   /* md */
+  .hide-md { display: none; }
+}
+
+@media (max-width: 1024px) {  /* lg */
+  .hide-lg { display: none; }
+}
+

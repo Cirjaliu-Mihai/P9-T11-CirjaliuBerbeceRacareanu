@@ -1,0 +1,12 @@
+<nav class="navbar">
+  <span class="navbar__brand">{{ appTitle }}</span>
+
+  <div class="navbar__links" *ngIf="auth.isLoggedIn()">
+    <a routerLink="/admin" *ngIf="auth.isAdministrator()">Admin</a>
+    <button class="btn btn--sm btn--outline" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="navbar__links" *ngIf="!auth.isLoggedIn()">
+    <a routerLink="/auth/login">Login</a>
+  </div>
+</nav>

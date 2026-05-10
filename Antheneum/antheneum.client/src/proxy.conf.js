@@ -7,6 +7,14 @@ const PROXY_CONFIG = [
   {
     context: [
       "/weatherforecast",
+      "/auth",
+      "/books",
+      "/branches",
+      "/readers",
+      "/loans",
+      "/copies",
+      "/reports",
+      "/blacklist",
     ],
     target,
     secure: false
