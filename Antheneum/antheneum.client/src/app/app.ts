@@ -1,8 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
-import { OnInit } from '@angular/core';
-import { WeatherForecast } from '../interfaces/weather-forecast';
-import { ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AdminDashboardStore } from './admin-dashboard.store';
 
 
 @Component({
@@ -12,26 +9,18 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+  readonly sections = [
+    { path: '/overview', label: 'Overview', eyebrow: 'Mission control' },
+    { path: '/library', label: 'Library management', eyebrow: 'Books and branches' },
+    { path: '/readers', label: 'Readers', eyebrow: 'Profiles and roles' },
+    { path: '/returns', label: 'Returns', eyebrow: 'Loan processing' },
+    { path: '/reports', label: 'Reports', eyebrow: 'Admin analytics' },
+    { path: '/loans', label: 'My loans', eyebrow: 'Reader dashboard' },
+  ];
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(public readonly store: AdminDashboardStore) {}
 
   ngOnInit() {
-    this.getForecasts();
+    this.store.ensureLoaded();
   }
-
-  async getForecasts() {
-    this.http.get<WeatherForecast[]>('https://localhost:7293/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-        this.cdr.detectChanges();
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-    
-  }
-
-  protected readonly title = signal('antheneum.client');
 }

@@ -1,45 +1,25 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, expect, it } from 'vitest';
 import { App } from './app';
+import { AdminDashboardStore } from './admin-dashboard.store';
+
+const adminDashboardStoreStub = {
+  metrics: [{ label: 'Branch network', value: 1, tone: 'sun' }],
+  loadDashboard: () => undefined,
+  ensureLoaded: () => undefined,
+} as unknown as AdminDashboardStore;
 
 describe('App', () => {
-  let component: App;
-  let fixture: ComponentFixture<App>;
-  let httpMock: HttpTestingController;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [App],
-      imports: [HttpClientTestingModule]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(App);
-    component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
   it('should create the app', () => {
+    const component = new App(adminDashboardStoreStub);
+
     expect(component).toBeTruthy();
   });
 
-  it('should retrieve weather forecasts from the server', () => {
-    const mockForecasts = [
-      { date: '2021-10-01', temperatureC: 20, temperatureF: 68, summary: 'Mild' },
-      { date: '2021-10-02', temperatureC: 25, temperatureF: 77, summary: 'Warm' }
-    ];
+  it('should expose routed dashboard sections', () => {
+    const component = new App(adminDashboardStoreStub);
 
-    component.ngOnInit();
-
-    const req = httpMock.expectOne('/weatherforecast');
-    expect(req.request.method).toEqual('GET');
-    req.flush(mockForecasts);
-
-    expect(component.forecasts).toEqual(mockForecasts);
+    expect(component.sections).toHaveLength(6);
+    expect(component.sections[1].label).toBe('Library management');
+    expect(component.sections[4].path).toBe('/reports');
   });
-};
+});

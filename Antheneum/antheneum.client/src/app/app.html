@@ -1,23 +1,69 @@
-<h1 id="tableLabel">Weather forecast</h1>
+<div class="app-shell">
+    <header class="shell-header panel">
+        <div class="brand-block brand-block--header">
+            <div>
+                <p class="kicker">Antheneum</p>
+                <h1 class="rail-title">Control room</h1>
+            </div>
+            <div class="shell-meta">
+                <p class="rail-copy">Admin dashboard and reports workspace for the library operations rollout.</p>
+                <mat-chip-set>
+                    <mat-chip>Operations suite</mat-chip>
+                </mat-chip-set>
+            </div>
+        </div>
 
-<p>This component demonstrates fetching data from the server.</p>
+        <nav class="top-nav" aria-label="Dashboard sections">
+            <a
+                *ngFor="let section of sections"
+                class="nav-chip"
+                [routerLink]="section.path"
+                routerLinkActive="is-active">
+                <span class="nav-chip__label">{{ section.label }}</span>
+                <span class="nav-chip__meta">{{ section.eyebrow }}</span>
+            </a>
+        </nav>
+    </header>
 
-<p *ngIf="forecasts.length===0"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
-<table *ngIf="forecasts.length>0">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let forecast of forecasts">
-            <td>{{ forecast.date }}</td>
-            <td>{{ forecast.temperatureC }}</td>
-            <td>{{ forecast.temperatureF }}</td>
-            <td>{{ forecast.summary }}</td>
-        </tr>
-    </tbody>
-</table>
+    <main class="workspace">
+        <mat-progress-bar *ngIf="store.isLoading" mode="indeterminate"></mat-progress-bar>
+
+        <mat-card class="hero-card panel">
+            <div class="hero-card__content">
+                <p class="kicker">Library operations</p>
+                <h2>Modern admin control across branches, readers, and reports.</h2>
+                <p class="hero-copy">A brighter, streamlined workspace for day-to-day catalog, circulation, and reporting activity with live data flowing in automatically.</p>
+            </div>
+
+            <div class="hero-card__spotlight">
+                <div class="hero-actions">
+                    <mat-chip-set>
+                        <mat-chip>Live data</mat-chip>
+                    </mat-chip-set>
+                </div>
+
+                <div class="spotlight-grid">
+                    <div class="spotlight-stat">
+                        <span>Workspace</span>
+                        <strong>Unified</strong>
+                    </div>
+                    <div class="spotlight-stat">
+                        <span>Navigation</span>
+                        <strong>Top-level</strong>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+
+        <section class="metric-grid">
+            <mat-card *ngFor="let metric of store.metrics" class="metric-card panel" [attr.data-tone]="metric.tone">
+                <p>{{ metric.label }}</p>
+                <strong>{{ metric.value }}</strong>
+            </mat-card>
+        </section>
+
+        <div class="router-slot">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

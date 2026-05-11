@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -33,11 +34,13 @@ public static class DependencyInjection
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
         services.AddSingleton<IFileStorageService>(_ => new LocalFileStorageService(env));
 
-        var secret = configuration["Jwt:Secret"]
-            ?? throw new InvalidOperationException("JWT secret is not configured.");
+        var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+        var secret = configuration["Jwt:Secret"];
+        var authBypassEnabled = env.IsDevelopment() && configuration.GetValue<bool>("Authentication:BypassEnabled");
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        if (!string.IsNullOrWhiteSpace(secret))
+        {
+            authenticationBuilder.AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -51,11 +54,17 @@ public static class DependencyInjection
                     ClockSkew = TimeSpan.Zero
                 };
             });
+        }
+        else if (!authBypassEnabled)
+        {
+            throw new InvalidOperationException("JWT secret is not configured.");
+        }
 
         services.AddAuthorizationBuilder()
             .AddPolicy("ReaderOnly", policy => policy.RequireRole(nameof(Role.Reader)))
             .AddPolicy("AdministratorOnly", policy => policy.RequireRole(nameof(Role.Administrator)));
 
         return services;
-    }
+}
+
 }
