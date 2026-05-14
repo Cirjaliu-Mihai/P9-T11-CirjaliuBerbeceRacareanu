@@ -5,7 +5,7 @@
       <h3>Generate operational tables</h3>
     </div>
     <mat-chip-set>
-      <mat-chip>{{ store.reportStatus }}</mat-chip>
+      <mat-chip>{{ store.reportStatus$ | async }}</mat-chip>
     </mat-chip-set>
   </div>
 
@@ -21,7 +21,7 @@
       <mat-label>Branch</mat-label>
       <mat-select [(ngModel)]="store.selectedBranchId">
         <mat-option value="">All branches</mat-option>
-        <mat-option *ngFor="let branch of store.branches" [value]="branch.branchId">{{ branch.name }}</mat-option>
+        <mat-option *ngFor="let branch of branches.branches$ | async" [value]="branch.branchId">{{ branch.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -42,12 +42,12 @@
     {{ store.reportTypes.find((item) => item.id === store.selectedReportType)?.helper }}
   </div>
 
-  <mat-card *ngIf="store.isReportLoading" class="empty-state">
+  <mat-card *ngIf="store.isReportLoading$ | async" class="empty-state">
     <strong>Building report</strong>
     <p>Loading the latest view from the API.</p>
   </mat-card>
 
-  <div *ngIf="!store.isReportLoading" class="table-wrap">
+  <div *ngIf="!(store.isReportLoading$ | async)" class="table-wrap">
     <table *ngIf="store.selectedReportType === 'inventory'">
       <thead>
         <tr>
@@ -60,7 +60,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.inventoryReport">
+        <tr *ngFor="let row of store.inventoryReport$ | async">
           <td>{{ row.branchName }}</td>
           <td>{{ row.title }}</td>
           <td>{{ row.isbn }}</td>
@@ -83,7 +83,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.overdueReport">
+        <tr *ngFor="let row of loans.overdueReport$ | async">
           <td>{{ row.username }}</td>
           <td>{{ row.bookTitle }}</td>
           <td>{{ row.branchName }}</td>
@@ -105,7 +105,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.blacklistReport">
+        <tr *ngFor="let row of loans.blacklistReport$ | async">
           <td>{{ row.username }}</td>
           <td>{{ row.reason || 'Review needed' }}</td>
           <td>{{ row.branchName || 'Not linked' }}</td>
@@ -131,7 +131,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.transactionReport">
+        <tr *ngFor="let row of store.transactionReport$ | async">
           <td>#{{ row.loanId }}</td>
           <td>{{ row.username }}</td>
           <td>{{ row.bookTitle }}</td>

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Book } from '../../../../models/library/book.model';
 import { BookFormValue } from '../../../../models/library/book-form-value.model';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { BooksStore } from '../../../../core/state/books.store';
 import { BookEditorDialogComponent } from '../../dialogs/book-editor-dialog/book-editor-dialog.component';
 import { DeleteConfirmationDialogComponent } from '../../dialogs/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -12,13 +12,26 @@ import { DeleteConfirmationDialogComponent } from '../../dialogs/delete-confirma
   styleUrl: './books-view.component.css',
   standalone: false,
 })
-export class BooksViewComponent {
-  feedbackMessage = '';
+export class BooksViewComponent implements OnInit {
+  searchTerm = '';
 
   constructor(
-    public readonly store: LibraryStore,
+    public readonly store: BooksStore,
     private readonly dialog: MatDialog,
   ) {}
+
+  ngOnInit() {
+    this.searchTerm = this.store.searchTerm;
+    this.store.loadPage(1, '');
+  }
+
+  onSearch() {
+    this.store.loadPage(1, this.searchTerm);
+  }
+
+  goToPage(page: number) {
+    this.store.loadPage(page);
+  }
 
   openCreateBookDialog() {
     this.dialog.open(BookEditorDialogComponent, {
@@ -32,9 +45,7 @@ export class BooksViewComponent {
       if (!result) {
         return;
       }
-      this.store.createBook(result.value, result.file).subscribe(() => {
-        this.feedbackMessage = 'Book created.';
-      });
+      this.store.createBook(result.value, result.file).subscribe();
     });
   }
 
@@ -55,9 +66,7 @@ export class BooksViewComponent {
       if (!result) {
         return;
       }
-      this.store.updateBook(book.bookId, result.value, result.file).subscribe(() => {
-        this.feedbackMessage = 'Book updated.';
-      });
+      this.store.updateBook(book.bookId, result.value, result.file).subscribe();
     });
   }
 
@@ -73,9 +82,7 @@ export class BooksViewComponent {
       if (!confirmed) {
         return;
       }
-      this.store.deleteBook(book.bookId).subscribe(() => {
-        this.feedbackMessage = 'Book deleted.';
-      });
+      this.store.deleteBook(book.bookId).subscribe();
     });
   }
 }

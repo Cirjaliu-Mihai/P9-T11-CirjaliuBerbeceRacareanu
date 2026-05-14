@@ -114,6 +114,7 @@ public class ReportRepository : IReportRepository
     {
         var query = _context.Unwantedclients
             .AsNoTracking()
+            .Where(entry => entry.Isresolved != true)
             .Where(entry => !branchId.HasValue || (entry.Loan != null && entry.Loan.Copy.Branchid == branchId.Value))
             .Select(entry => new BlacklistReportModel
             {

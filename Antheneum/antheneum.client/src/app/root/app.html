@@ -9,7 +9,7 @@
     </app-shell-navbar>
 
     <main class="workspace">
-        <mat-progress-bar *ngIf="store.isLoading" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
 
         <div class="router-slot">
             <router-outlet></router-outlet>

@@ -15,22 +15,22 @@
       <button mat-stroked-button type="button" (click)="store.lookupReturn()">Lookup</button>
     </div>
 
-    <mat-card *ngIf="store.selectedReturn; else emptyReturnState" class="return-card">
+    <mat-card *ngIf="store.selectedReturn$ | async as selectedReturn; else emptyReturnState" class="return-card">
       <p class="kicker">Return candidate</p>
-      <h4>{{ store.selectedReturn.bookTitle }}</h4>
-      <p>{{ store.selectedReturn.readerName }} at {{ store.selectedReturn.branchName }}</p>
+      <h4>{{ selectedReturn.bookTitle }}</h4>
+      <p>{{ selectedReturn.readerName }} at {{ selectedReturn.branchName }}</p>
       <dl>
         <div>
           <dt>Due date</dt>
-          <dd>{{ store.selectedReturn.dueDate }}</dd>
+          <dd>{{ selectedReturn.dueDate }}</dd>
         </div>
         <div>
           <dt>Overdue</dt>
-          <dd>{{ store.selectedReturn.overdueDays }} days</dd>
+          <dd>{{ selectedReturn.overdueDays }} days</dd>
         </div>
         <div>
           <dt>Fine</dt>
-          <dd>{{ store.selectedReturn.fineAmount | currency }}</dd>
+          <dd>{{ selectedReturn.fineAmount | currency }}</dd>
         </div>
       </dl>
       <button mat-flat-button type="button" (click)="confirmReturn()">Confirm return</button>
@@ -50,12 +50,12 @@
         <p class="kicker">Penalty queue</p>
         <h3>Blacklist resolution table</h3>
       </div>
-      <mat-chip-set>
-        <mat-chip>{{ store.blacklistReport.length }} unresolved</mat-chip>
+      <mat-chip-set *ngIf="store.blacklistReport$ | async as blacklistReport">
+        <mat-chip>{{ blacklistReport.length }} unresolved</mat-chip>
       </mat-chip-set>
     </div>
 
-    <div class="table-wrap compact-table">
+    <div class="table-wrap compact-table" *ngIf="store.blacklistReport$ | async as blacklistReport">
       <table>
         <thead>
           <tr>
@@ -66,7 +66,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let entry of store.blacklistReport">
+          <tr *ngFor="let entry of blacklistReport">
             <td>
               <strong>{{ entry.username }}</strong>
               <p>{{ entry.libraryCardNumber }}</p>

@@ -2,6 +2,7 @@ using API.Requests;
 using Application.Features.Readers.ChangeReaderRole;
 using Application.Features.Readers.GetReaders;
 using Application.Features.Readers.RemoveFromBlacklist;
+using Application.Features.Readers.ResolvePenalty;
 using Application.Features.Readers.UpdateMyProfile;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -62,6 +63,14 @@ public class ReadersController : ControllerBase
     public async Task<IActionResult> RemoveFromBlacklist(int readerId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new RemoveFromBlacklistQuery(readerId), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("/blacklist/{penaltyId}/resolve")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> ResolvePenalty(int penaltyId, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new ResolvePenaltyQuery(penaltyId), cancellationToken);
         return NoContent();
     }
 

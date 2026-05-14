@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfileFormValue } from '../../../../models/reader/profile-form-value.model';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { LoansStore } from '../../../../core/state/loans.store';
+import { ReadersStore } from '../../../../core/state/readers.store';
 import { ProfileEditorDialogComponent } from '../../dialogs/profile-editor-dialog/profile-dialog.component';
 
 @Component({
@@ -11,10 +12,9 @@ import { ProfileEditorDialogComponent } from '../../dialogs/profile-editor-dialo
   standalone: false,
 })
 export class MyLoansPageComponent {
-  feedbackMessage = '';
-
   constructor(
-    public readonly store: LibraryStore,
+    public readonly store: ReadersStore,
+    public readonly loans: LoansStore,
     private readonly dialog: MatDialog,
   ) {}
 
@@ -34,9 +34,7 @@ export class MyLoansPageComponent {
       if (!value) {
         return;
       }
-      this.store.updateMyProfile(value).subscribe(() => {
-        this.feedbackMessage = 'Profile updated.';
-      });
+      this.store.updateMyProfile(value).subscribe();
     });
   }
 }

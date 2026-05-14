@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BlacklistReport } from '../../../../models/reports/blacklist-report.model';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { LoansStore } from '../../../../core/state/loans.store';
 
 @Component({
   selector: 'app-returns-view',
@@ -9,7 +9,7 @@ import { LibraryStore } from '../../../../core/state/library.store';
   standalone: false,
 })
 export class ReturnsViewComponent {
-  constructor(public readonly store: LibraryStore) {}
+  constructor(public readonly store: LoansStore) {}
 
   confirmReturn() {
     this.store.confirmReturn().subscribe();

@@ -18,13 +18,13 @@
         </a>
     </nav>
 
-    <div class="account-cluster" aria-label="Current session">
-        <button mat-stroked-button class="account-cluster__profile" type="button">
-            <span class="profile-copy">
-                <strong>{{ username }}</strong>
-            </span>
+    <div class="profile-anchor" aria-label="Current session">
+        <button mat-icon-button class="profile-btn" type="button" aria-label="Account">
+            <mat-icon>person</mat-icon>
         </button>
-
-        <button mat-stroked-button type="button" (click)="onSignOut()">Sign out</button>
+        <div class="profile-popup">
+            <span class="profile-popup__name">{{ username }}</span>
+            <button mat-stroked-button type="button" (click)="onSignOut()">Sign out</button>
+        </div>
     </div>
 </div>

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { BranchesStore } from '../../../../core/state/branches.store';
+import { LoansStore } from '../../../../core/state/loans.store';
+import { ReportsStore } from '../../../../core/state/reports.store';
 
 @Component({
   selector: 'app-reports-view',
@@ -8,5 +10,9 @@ import { LibraryStore } from '../../../../core/state/library.store';
   standalone: false,
 })
 export class ReportsViewComponent {
-  constructor(public readonly store: LibraryStore) {}
+  constructor(
+    public readonly store: ReportsStore,
+    public readonly loans: LoansStore,
+    public readonly branches: BranchesStore,
+  ) {}
 }

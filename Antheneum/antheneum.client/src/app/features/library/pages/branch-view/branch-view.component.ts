@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Branch } from '../../../../models/library/branch.model';
 import { BranchFormValue } from '../../../../models/library/branch-form-value.model';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { BranchesStore } from '../../../../core/state/branches.store';
 import { BranchEditorDialogComponent } from '../../dialogs/branch-editor-dialog/branch-editor-dialog.component';
 import { DeleteConfirmationDialogComponent } from '../../dialogs/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -13,10 +13,8 @@ import { DeleteConfirmationDialogComponent } from '../../dialogs/delete-confirma
   standalone: false,
 })
 export class BranchViewComponent {
-  feedbackMessage = '';
-
   constructor(
-    public readonly store: LibraryStore,
+    public readonly store: BranchesStore,
     private readonly dialog: MatDialog,
   ) {}
 
@@ -28,9 +26,7 @@ export class BranchViewComponent {
       if (!value) {
         return;
       }
-      this.store.createBranch(value).subscribe(() => {
-        this.feedbackMessage = 'Branch created.';
-      });
+      this.store.createBranch(value).subscribe();
     });
   }
 
@@ -45,9 +41,7 @@ export class BranchViewComponent {
       if (!value) {
         return;
       }
-      this.store.updateBranch(branch.branchId, value).subscribe(() => {
-        this.feedbackMessage = 'Branch updated.';
-      });
+      this.store.updateBranch(branch.branchId, value).subscribe();
     });
   }
 
@@ -63,9 +57,7 @@ export class BranchViewComponent {
       if (!confirmed) {
         return;
       }
-      this.store.deleteBranch(branch.branchId).subscribe(() => {
-        this.feedbackMessage = 'Branch deleted.';
-      });
+      this.store.deleteBranch(branch.branchId).subscribe();
     });
   }
 }

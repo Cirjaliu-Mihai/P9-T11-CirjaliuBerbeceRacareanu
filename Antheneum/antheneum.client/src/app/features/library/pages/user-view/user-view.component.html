@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <div class="table-wrap">
+  <div class="table-wrap" *ngIf="store.filteredReaders$ | async as filteredReaders">
     <table>
       <thead>
         <tr>
@@ -34,7 +34,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let reader of store.filteredReaders">
+        <tr *ngFor="let reader of filteredReaders">
           <td>
             <strong>{{ reader.username }}</strong>
             <p>{{ reader.address || 'Address not set' }}</p>

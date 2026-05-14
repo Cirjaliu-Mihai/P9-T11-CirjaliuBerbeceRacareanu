@@ -1,0 +1,77 @@
+<mat-card class="panel">
+  <div class="panel-heading">
+    <div>
+      <p class="kicker">Copies</p>
+      <h3>Book inventory</h3>
+    </div>
+    <div class="toolbar-actions">
+      <mat-chip-set *ngIf="store.selectedBookId && !(store.isLoading$ | async)">
+        <mat-chip>{{ (store.copies$ | async)?.length }} copies</mat-chip>
+      </mat-chip-set>
+      <button mat-flat-button type="button" [disabled]="!store.selectedBookId" (click)="openAddCopiesDialog()">Add copies</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="book-selector">
+      <mat-label>Select book</mat-label>
+      <mat-select [ngModel]="store.selectedBookId" (ngModelChange)="onBookChange($event)">
+        <mat-option disabled class="book-search-option">
+          <input
+            class="book-search-input"
+            placeholder="Search books…"
+            [(ngModel)]="bookSearch"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()" />
+        </mat-option>
+        <mat-option *ngFor="let book of filteredBooks" [value]="book.bookId">{{ book.title }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <mat-card *ngIf="!store.selectedBookId" class="empty-state">
+    <strong>No book selected</strong>
+    <p>Choose a title from the dropdown above to view its copies across branches.</p>
+  </mat-card>
+
+  <mat-card *ngIf="store.selectedBookId && (store.isLoading$ | async)" class="empty-state">
+    <strong>Loading copies</strong>
+    <p>Fetching inventory from the API.</p>
+  </mat-card>
+
+  <ng-container *ngIf="store.selectedBookId && !(store.isLoading$ | async)">
+    <div *ngIf="store.copies$ | async as copies" class="table-wrap">
+      <table *ngIf="copies.length; else noCopies">
+        <thead>
+          <tr>
+            <th>Copy ID</th>
+            <th>Branch</th>
+            <th>Status</th>
+            <th>Borrower</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let copy of copies">
+            <td class="copy-id">#{{ copy.copyId }}</td>
+            <td>{{ copy.branchName }}</td>
+            <td>
+              <mat-chip-set>
+                <mat-chip [class]="'status-' + (copy.status ?? 'unknown').toLowerCase()">
+                  {{ copy.status ?? 'Unknown' }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+            <td class="borrower-cell">{{ copy.borrowerName ?? '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noCopies>
+        <mat-card class="empty-state">
+          <strong>No copies found</strong>
+          <p>This book has no copies assigned to any branch yet. Use "Add copies" to add stock.</p>
+        </mat-card>
+      </ng-template>
+    </div>
+  </ng-container>
+</mat-card>

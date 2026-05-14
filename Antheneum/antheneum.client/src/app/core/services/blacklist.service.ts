@@ -5,7 +5,7 @@ import { ApiService } from './api.service';
 export class BlacklistService {
   constructor(private readonly api: ApiService) {}
 
-  resolve(readerId: number) {
-    return this.api.delete<void>(`blacklist/${readerId}`);
+  resolve(penaltyId: number) {
+    return this.api.put<void>(`blacklist/${penaltyId}/resolve`, {});
   }
 }

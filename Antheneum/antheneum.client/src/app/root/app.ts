@@ -21,6 +21,7 @@ export class App implements OnInit, OnDestroy {
     { path: '/admin/overview', label: 'Overview', eyebrow: 'Mission control' },
     { path: '/admin/branches', label: 'Branches', eyebrow: 'Network and locations' },
     { path: '/admin/books', label: 'Books', eyebrow: 'Catalog and metadata' },
+    { path: '/admin/copies', label: 'Copies', eyebrow: 'Stock and availability' },
     { path: '/admin/users', label: 'Users', eyebrow: 'Profiles and roles' },
     { path: '/admin/returns', label: 'Loans', eyebrow: 'Loan processing' },
     { path: '/admin/reports', label: 'Reports', eyebrow: 'Admin analytics' },

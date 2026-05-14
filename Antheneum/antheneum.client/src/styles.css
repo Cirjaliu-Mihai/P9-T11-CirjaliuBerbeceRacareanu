@@ -1,5 +1,6 @@
 @import '@angular/material/prebuilt-themes/azure-blue.css';
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 /* ---------------------------------------------------------------------------
  * Global tokens, document-level resets, and Material theme overrides only.

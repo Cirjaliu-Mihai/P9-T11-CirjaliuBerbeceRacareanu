@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Reader } from '../../../../models/reader/reader.model';
-import { LibraryStore } from '../../../../core/state/library.store';
+import { ReadersStore } from '../../../../core/state/readers.store';
 
 @Component({
   selector: 'app-user-view',
@@ -9,7 +9,7 @@ import { LibraryStore } from '../../../../core/state/library.store';
   standalone: false,
 })
 export class UserViewComponent {
-  constructor(public readonly store: LibraryStore) {}
+  constructor(public readonly store: ReadersStore) {}
 
   updateRole(reader: Reader, nextRole: string) {
     this.store.updateReaderRole(reader, nextRole).subscribe();
