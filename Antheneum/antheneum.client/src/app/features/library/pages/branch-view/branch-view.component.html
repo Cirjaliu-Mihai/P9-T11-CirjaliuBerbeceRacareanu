@@ -1,0 +1,35 @@
+<mat-card class="panel">
+  <div class="panel-heading">
+    <div>
+      <p class="kicker">Branches</p>
+      <h3>Branch management</h3>
+    </div>
+    <div class="toolbar-actions">
+      <mat-chip-set>
+        <mat-chip>{{ store.branches.length }} branches</mat-chip>
+      </mat-chip-set>
+      <button mat-flat-button type="button" (click)="openCreateBranchDialog()">New branch</button>
+    </div>
+  </div>
+
+  <div class="stack-list">
+    <mat-card *ngFor="let branch of store.branches" class="stack-card">
+      <div>
+        <strong>{{ branch.name }}</strong>
+        <p>{{ branch.address || 'Address pending' }}</p>
+      </div>
+      <div class="card-actions">
+        <span>{{ branch.uniqueNumber }}</span>
+        <div class="action-row">
+          <button mat-stroked-button type="button" (click)="openEditBranchDialog(branch)">Edit</button>
+          <button mat-stroked-button type="button" color="warn" (click)="confirmDelete(branch)">Delete</button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</mat-card>
+
+<mat-card *ngIf="feedbackMessage" class="panel feedback-panel">
+  <p class="kicker">Branch workflow</p>
+  <p>{{ feedbackMessage }}</p>
+</mat-card>

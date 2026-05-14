@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content class="editor-dialog-content">
+  <div class="field-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="draft.name" placeholder="Central Atrium" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <input matInput [(ngModel)]="draft.address" placeholder="14 Scholar Square" />
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="dialogRef.close()">Cancel</button>
+  <button mat-flat-button type="button" (click)="dialogRef.close(draft)">Save branch</button>
+</mat-dialog-actions>
