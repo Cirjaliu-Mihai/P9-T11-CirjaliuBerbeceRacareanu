@@ -1,3 +1,7 @@
+<div *ngIf="auth.isAuthenticated()" class="bg-layer">
+    <app-three-background></app-three-background>
+</div>
+
 <ng-container *ngIf="auth.isAuthenticated(); else authOutlet">
 <div class="app-shell">
     <app-shell-navbar

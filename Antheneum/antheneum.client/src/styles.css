@@ -44,19 +44,6 @@ body {
   background-attachment: fixed;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: url('/library-bg.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  opacity: 0.2;
-}
-
 .mat-typography,
 .mat-mdc-card,
 .mat-mdc-button,
