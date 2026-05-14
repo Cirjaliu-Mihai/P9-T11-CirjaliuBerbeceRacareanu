@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Branch } from '../../../../models/library/branch.model';
 
@@ -17,13 +17,12 @@ interface AddCopiesResult {
   standalone: false,
 })
 export class AddCopiesDialogComponent {
+  readonly dialogRef =
+    inject<MatDialogRef<AddCopiesDialogComponent, AddCopiesResult>>(MatDialogRef);
+  readonly data = inject<AddCopiesDialogData>(MAT_DIALOG_DATA);
+
   branchId = 0;
   count = 1;
-
-  constructor(
-    public readonly dialogRef: MatDialogRef<AddCopiesDialogComponent, AddCopiesResult>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: AddCopiesDialogData,
-  ) {}
 
   submit() {
     if (!this.branchId || this.count < 1) {

@@ -215,6 +215,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Librarycardnumber)
                 .HasMaxLength(50)
                 .HasColumnName("librarycardnumber");
+            entity.Property(e => e.Subscriptionexpiry).HasColumnName("subscriptionexpiry");
             entity.Property(e => e.Userid).HasColumnName("userid");
 
             entity.HasOne(d => d.User).WithMany(p => p.Readers)

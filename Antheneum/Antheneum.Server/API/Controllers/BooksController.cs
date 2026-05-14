@@ -26,11 +26,13 @@ public class BooksController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetBooks(
         [FromQuery] string? search,
+        [FromQuery] string? author,
+        [FromQuery] string? publisher,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new GetBooksQuery(search, page, pageSize), cancellationToken);
+        var result = await _mediator.Send(new GetBooksQuery(search, page, pageSize, author, publisher), cancellationToken);
         return Ok(result);
     }
 

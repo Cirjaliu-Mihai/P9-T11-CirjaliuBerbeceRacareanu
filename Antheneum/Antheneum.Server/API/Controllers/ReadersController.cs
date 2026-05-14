@@ -3,6 +3,7 @@ using Application.Features.Readers.ChangeReaderRole;
 using Application.Features.Readers.GetReaders;
 using Application.Features.Readers.RemoveFromBlacklist;
 using Application.Features.Readers.ResolvePenalty;
+using Application.Features.Readers.RenewSubscription;
 using Application.Features.Readers.UpdateMyProfile;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,15 @@ public class ReadersController : ControllerBase
             new UpdateMyProfileQuery(userId, request.Phone, request.Address, request.CurrentPassword, request.NewPassword),
             cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPost("me/subscribe")]
+    [Authorize(Roles = "Reader")]
+    public async Task<IActionResult> RenewSubscription(CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        var newExpiry = await _mediator.Send(new RenewSubscriptionCommand(userId), cancellationToken);
+        return Ok(new { subscriptionExpiry = newExpiry });
     }
 
     [HttpDelete("/blacklist/{readerId}")]

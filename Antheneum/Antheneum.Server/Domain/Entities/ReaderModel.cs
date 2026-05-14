@@ -12,5 +12,7 @@ public class ReaderModel
     public string? Address { get; init; }
     public string LibraryCardNumber { get; init; } = string.Empty;
     public bool IsBlacklisted { get; init; }
+    public DateOnly? SubscriptionExpiry { get; init; }
+    public bool HasActiveSubscription => SubscriptionExpiry.HasValue && SubscriptionExpiry.Value >= DateOnly.FromDateTime(DateTime.UtcNow);
     public Role Role { get; init; }
 }

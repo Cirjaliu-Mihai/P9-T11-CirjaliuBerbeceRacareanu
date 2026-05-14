@@ -7,5 +7,7 @@ export interface Reader {
   address: string | null;
   libraryCardNumber: string;
   isBlacklisted: boolean;
+  subscriptionExpiry: string | null;
+  hasActiveSubscription: boolean;
   role: string;
 }

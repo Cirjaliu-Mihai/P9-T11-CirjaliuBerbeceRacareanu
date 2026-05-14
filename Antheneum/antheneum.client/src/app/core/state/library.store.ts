@@ -44,19 +44,27 @@ export class LibraryStore {
   get metrics() {
     if (this.viewerRole === 'Reader') {
       const activeLoans = this.loansStore.myLoans.filter((loan) => loan.isActive).length;
-      const overdueLoans = this.loansStore.myLoans.filter((loan) => loan.isActive && new Date(loan.dueDate) < new Date()).length;
+      const overdueLoans = this.loansStore.myLoans.filter(
+        (loan) => loan.isActive && new Date(loan.dueDate) < new Date(),
+      ).length;
 
       return [
         { label: 'Catalog snapshot', value: this.booksStore.books.length, tone: 'sun' },
         { label: 'Active loans', value: activeLoans, tone: 'ocean' },
         { label: 'Overdue items', value: overdueLoans, tone: 'ember' },
-        { label: 'Profile status', value: this.readersStore.currentProfile ? 'Linked' : 'Pending', tone: 'mint' },
+        {
+          label: 'Profile status',
+          value: this.readersStore.currentProfile ? 'Linked' : 'Pending',
+          tone: 'mint',
+        },
       ];
     }
 
     const activeLoans = this.loansStore.myLoans.filter((loan) => loan.isActive).length;
     const overdueLoans = this.loansStore.overdueReport.length;
-    const unresolvedPenalties = this.loansStore.blacklistReport.filter((entry) => !entry.isResolved).length;
+    const unresolvedPenalties = this.loansStore.blacklistReport.filter(
+      (entry) => !entry.isResolved,
+    ).length;
 
     return [
       { label: 'Branch network', value: this.branchesStore.branches.length, tone: 'sun' },
@@ -74,11 +82,12 @@ export class LibraryStore {
     this.viewerRole = role;
     this.initialized = false;
     this.resetAll();
-    this.reportsStore.reportStatus = role === 'Administrator'
-      ? 'Select a report type and generate a view.'
-      : role === 'Reader'
-        ? 'Reader workspace ready.'
-        : 'Sign in to load workspace data.';
+    this.reportsStore.reportStatus =
+      role === 'Administrator'
+        ? 'Select a report type and generate a view.'
+        : role === 'Reader'
+          ? 'Reader workspace ready.'
+          : 'Sign in to load workspace data.';
 
     if (role) {
       this.ensureLoaded();
@@ -120,24 +129,31 @@ export class LibraryStore {
       readers: this.readersService.list('', this.readersStore.readerSort),
       overdue: this.reportsService.overdue(null, 1, 6),
       blacklist: this.reportsService.blacklist(null, 1, 6),
-    }).pipe(finalize(() => { this.isLoading = false; })).subscribe({
-      next: ({ branches, books, readers, overdue, blacklist }) => {
-        this.branchesStore.branches = branches;
-        this.booksStore.books = books.items;
-        this.readersStore.readers = readers;
-        this.loansStore.myLoans = [];
-        this.loansStore.overdueReport = overdue.items;
-        this.loansStore.blacklistReport = blacklist.items;
-        this.readersStore.syncCurrentProfile();
-        this.readersStore.applyReaderFilters();
-        this.loansStore.lookupReturn();
-        this.reportsStore.generateReport();
-      },
-      error: () => {
-        this.resetAll();
-        this.reportsStore.reportStatus = 'Unable to load administrator workspace data from the API.';
-      },
-    });
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      )
+      .subscribe({
+        next: ({ branches, books, readers, overdue, blacklist }) => {
+          this.branchesStore.branches = branches;
+          this.booksStore.books = books.items;
+          this.readersStore.readers = readers;
+          this.loansStore.myLoans = [];
+          this.loansStore.overdueReport = overdue.items;
+          this.loansStore.blacklistReport = blacklist.items;
+          this.readersStore.syncCurrentProfile();
+          this.readersStore.applyReaderFilters();
+          this.loansStore.lookupReturn();
+          this.reportsStore.generateReport();
+        },
+        error: () => {
+          this.resetAll();
+          this.reportsStore.reportStatus =
+            'Unable to load administrator workspace data from the API.';
+        },
+      });
   }
 
   private loadReaderDashboard() {
@@ -146,23 +162,32 @@ export class LibraryStore {
     forkJoin({
       books: this.booksService.list('', 1, 6),
       myLoans: this.loansService.myLoans(),
-    }).pipe(finalize(() => { this.isLoading = false; })).subscribe({
-      next: ({ books, myLoans }) => {
-        this.booksStore.books = books.items;
-        this.loansStore.myLoans = myLoans;
-        this.branchesStore.reset();
-        this.readersStore.reset();
-        this.reportsStore.reset();
-        this.loansStore.overdueReport = [];
-        this.loansStore.blacklistReport = [];
-        this.loansStore.selectedReturn = null;
-        this.reportsStore.reportStatus = 'Reader workspace ready.';
-      },
-      error: () => {
-        this.resetAll();
-        this.reportsStore.reportStatus = 'Unable to load reader workspace data from the API.';
-      },
-    });
+      branches: this.branchesService.list(),
+      readers: this.readersService.list('', ''),
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      )
+      .subscribe({
+        next: ({ books, myLoans, branches, readers }) => {
+          this.booksStore.books = books.items;
+          this.loansStore.myLoans = myLoans;
+          this.branchesStore.branches = branches;
+          this.readersStore.readers = readers;
+          this.readersStore.syncCurrentProfile();
+          this.reportsStore.reset();
+          this.loansStore.overdueReport = [];
+          this.loansStore.blacklistReport = [];
+          this.loansStore.selectedReturn = null;
+          this.reportsStore.reportStatus = 'Reader workspace ready.';
+        },
+        error: () => {
+          this.resetAll();
+          this.reportsStore.reportStatus = 'Unable to load reader workspace data from the API.';
+        },
+      });
   }
 
   private resetAll() {

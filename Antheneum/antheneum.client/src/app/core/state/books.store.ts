@@ -14,7 +14,7 @@ export class BooksStore {
   readonly isLoading$ = this.isLoadingSubject.asObservable();
 
   page = 1;
-  readonly pageSize = 12;
+  readonly pageSize = 24;
   totalCount = 0;
   searchTerm = '';
 
@@ -40,8 +40,13 @@ export class BooksStore {
     this.page = page;
     this.searchTerm = search;
     this.isLoading = true;
-    this.booksService.list(search, page, this.pageSize)
-      .pipe(finalize(() => { this.isLoading = false; }))
+    this.booksService
+      .list(search, page, this.pageSize)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      )
       .subscribe({
         next: (result) => {
           this.books = result.items;
@@ -64,7 +69,7 @@ export class BooksStore {
 
     return this.booksService.create(formData).pipe(
       tap((book) => {
-        this.books = this.books.map((item) => item.bookId === temporaryBook.bookId ? book : item);
+        this.books = this.books.map((item) => (item.bookId === temporaryBook.bookId ? book : item));
         this.loadPage(this.page);
       }),
       catchError((error) => {
@@ -86,12 +91,12 @@ export class BooksStore {
         authors: value.authors.trim() || null,
         publisher: value.publisher.trim() || null,
       };
-      this.books = this.books.map((item) => item.bookId === bookId ? optimisticBook : item);
+      this.books = this.books.map((item) => (item.bookId === bookId ? optimisticBook : item));
     }
 
     return this.booksService.update(bookId, formData).pipe(
       tap((book) => {
-        this.books = this.books.map((item) => item.bookId === bookId ? book : item);
+        this.books = this.books.map((item) => (item.bookId === bookId ? book : item));
       }),
       catchError((error) => {
         this.books = previousBooks;

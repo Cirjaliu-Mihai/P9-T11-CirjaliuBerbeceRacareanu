@@ -66,6 +66,7 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
                 .ForMember(dest => dest.LibraryCardNumber, opt => opt.MapFrom(src => src.Librarycardnumber))
                 .ForMember(dest => dest.IsBlacklisted, opt => opt.MapFrom(src => src.Isblacklisted ?? false))
+                .ForMember(dest => dest.SubscriptionExpiry, opt => opt.MapFrom(src => src.Subscriptionexpiry))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
                     src.User.Administrators != null && src.User.Administrators.Any()
                         ? Role.Administrator

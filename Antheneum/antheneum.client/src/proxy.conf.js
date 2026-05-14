@@ -20,6 +20,7 @@ const PROXY_CONFIG = [
       "/readers",
       "/blacklist",
       "/reports",
+      "/images",
     ],
     target,
     secure: false

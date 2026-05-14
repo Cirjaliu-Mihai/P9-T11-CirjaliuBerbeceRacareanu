@@ -1,9 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 type DeleteDialogData = {
   title: string;
-  description: string;
   confirmLabel: string;
 };
 
@@ -14,8 +13,7 @@ type DeleteDialogData = {
   standalone: false,
 })
 export class DeleteConfirmationDialogComponent {
-  constructor(
-    public readonly dialogRef: MatDialogRef<DeleteConfirmationDialogComponent, boolean>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: DeleteDialogData,
-  ) {}
+  readonly dialogRef =
+    inject<MatDialogRef<DeleteConfirmationDialogComponent, boolean>>(MatDialogRef);
+  readonly data = inject<DeleteDialogData>(MAT_DIALOG_DATA);
 }

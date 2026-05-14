@@ -1,0 +1,18 @@
+<div class="app-shell">
+  <app-shell-navbar
+    workspaceEyebrow="Antheneum"
+    workspaceTitle="Control room"
+    [sections]="sections"
+    [username]="username"
+    (signOut)="logout()"
+  >
+  </app-shell-navbar>
+
+  <main class="workspace">
+    <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
+
+    <div class="router-slot">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

@@ -34,4 +34,8 @@ export class ReadersService {
   updateMyProfile(payload: UpdateProfilePayload) {
     return this.api.put<Reader>('readers/me', payload);
   }
+
+  renewSubscription() {
+    return this.api.post<{ subscriptionExpiry: string }>('readers/me/subscribe', {});
+  }
 }

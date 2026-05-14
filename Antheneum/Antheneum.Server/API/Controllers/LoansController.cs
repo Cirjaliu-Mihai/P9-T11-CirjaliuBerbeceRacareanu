@@ -1,7 +1,9 @@
 using Application.Features.Loans.CreateLoan;
 using Application.Features.Loans.GetMyLoans;
+using Application.Features.Loans.GetMyPenalties;
 using Application.Features.Loans.RenewLoan;
 using Application.Features.Loans.ReturnLoan;
+using Application.Features.Loans.SearchActiveLoans;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +49,14 @@ public class LoansController : ControllerBase
         return Ok(loan);
     }
 
+    [HttpGet("active")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> SearchActiveLoans([FromQuery] string username, CancellationToken cancellationToken)
+    {
+        var results = await _mediator.Send(new SearchActiveLoansQuery(username), cancellationToken);
+        return Ok(results);
+    }
+
     [HttpGet("my")]
     [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetMyLoans(CancellationToken cancellationToken)
@@ -54,6 +64,15 @@ public class LoansController : ControllerBase
         var userId = GetUserId();
         var loans = await _mediator.Send(new GetMyLoansQuery(userId), cancellationToken);
         return Ok(loans);
+    }
+
+    [HttpGet("my-fines")]
+    [Authorize(Roles = "Reader")]
+    public async Task<IActionResult> GetMyFines(CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        var fines = await _mediator.Send(new GetMyPenaltiesQuery(userId), cancellationToken);
+        return Ok(fines);
     }
 
     private int GetUserId()

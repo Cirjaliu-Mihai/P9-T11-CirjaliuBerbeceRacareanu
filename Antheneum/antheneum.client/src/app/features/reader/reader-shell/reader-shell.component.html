@@ -1,0 +1,32 @@
+<div class="reader-layout">
+  <header class="reader-header">
+    <div class="header-inner">
+      <a class="brand" routerLink="/reader/catalog">
+        <mat-icon>local_library</mat-icon>
+        <span>Antheneum</span>
+      </a>
+
+      <nav class="reader-nav">
+        <a mat-button routerLink="/reader/catalog" routerLinkActive="nav-active">Catalog</a>
+        <ng-container *ngIf="isReader">
+          <a mat-button routerLink="/reader/loans" routerLinkActive="nav-active">My Loans</a>
+          <a mat-button routerLink="/reader/checkout" routerLinkActive="nav-active">Checkout</a>
+        </ng-container>
+      </nav>
+
+      <div class="header-actions">
+        <ng-container *ngIf="isReader; else guestActions">
+          <span class="username-label">{{ auth.username() }}</span>
+          <button mat-stroked-button (click)="logout()">Sign out</button>
+        </ng-container>
+        <ng-template #guestActions>
+          <a mat-flat-button color="primary" routerLink="/auth">Sign in</a>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <main class="reader-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,65 @@
+<div class="catalog-page">
+  <div class="catalog-header">
+    <div>
+      <p class="kicker">Public Catalog</p>
+      <h2>Browse Books</h2>
+    </div>
+    <mat-chip-set>
+      <mat-chip [highlighted]="filterMode === 'all'" (click)="setFilterMode('all')">All</mat-chip>
+      <mat-chip [highlighted]="filterMode === 'title'" (click)="setFilterMode('title')"
+        >Title</mat-chip
+      >
+      <mat-chip [highlighted]="filterMode === 'author'" (click)="setFilterMode('author')"
+        >Author</mat-chip
+      >
+      <mat-chip [highlighted]="filterMode === 'publisher'" (click)="setFilterMode('publisher')"
+        >Publisher</mat-chip
+      >
+    </mat-chip-set>
+  </div>
+
+  <mat-form-field class="search-field" appearance="outline">
+    <mat-label
+      >Search by {{ filterMode === 'all' ? 'title, author or publisher' : filterMode }}</mat-label
+    >
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)" />
+  </mat-form-field>
+
+  <mat-progress-bar
+    *ngIf="isLoading"
+    mode="indeterminate"
+    class="catalog-progress"
+  ></mat-progress-bar>
+
+  <div class="catalog-grid" *ngIf="books.length > 0; else emptyState">
+    <mat-card class="book-card" *ngFor="let book of books" (click)="openBook(book)" role="button">
+      <img *ngIf="book.imgUrl" [src]="book.imgUrl" [alt]="book.title" class="book-cover" />
+      <div *ngIf="!book.imgUrl" class="cover-placeholder">
+        <mat-icon>menu_book</mat-icon>
+      </div>
+      <mat-card-content>
+        <p class="book-title">{{ book.title }}</p>
+        <p class="book-meta">{{ book.authors || 'Unknown author' }}</p>
+        <p class="book-meta small">{{ book.publisher }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state" *ngIf="!isLoading">
+      <mat-icon>search_off</mat-icon>
+      <p>No books found</p>
+    </div>
+  </ng-template>
+
+  <div class="pagination-bar" *ngIf="totalPages > 1">
+    <button mat-icon-button [disabled]="page <= 1" (click)="loadPage(page - 1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span>Page {{ page }} of {{ totalPages }}</span>
+    <button mat-icon-button [disabled]="page >= totalPages" (click)="loadPage(page + 1)">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

@@ -13,6 +13,8 @@ public partial class Reader
 
     public bool? Isblacklisted { get; set; }
 
+    public DateOnly? Subscriptionexpiry { get; set; }
+
     public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
 
     public virtual ICollection<Unwantedclient> Unwantedclients { get; set; } = new List<Unwantedclient>();

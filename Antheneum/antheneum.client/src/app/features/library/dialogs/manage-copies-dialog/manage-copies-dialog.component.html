@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>Copies — {{ book.title }}</h2>
+
+<mat-dialog-content>
+  <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
+
+  <ng-container *ngIf="!(store.isLoading$ | async)">
+    <ng-container *ngIf="store.copies$ | async as copies">
+      <table *ngIf="copies.length; else noCopies" class="copies-table">
+        <thead>
+          <tr>
+            <th>Copy ID</th>
+            <th>Branch</th>
+            <th>Status</th>
+            <th>Borrower</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let copy of copies">
+            <td class="copy-id">#{{ copy.copyId }}</td>
+            <td>{{ copy.branchName }}</td>
+            <td>
+              <mat-chip-set>
+                <mat-chip [class]="'status-' + (copy.status ?? 'unknown').toLowerCase()">
+                  {{ copy.status ?? 'Unknown' }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+            <td class="borrower-cell">{{ copy.borrowerName ?? '—' }}</td>
+            <td class="actions-cell">
+              <button
+                mat-icon-button
+                type="button"
+                color="warn"
+                [disabled]="copy.status !== 'Borrowed'"
+                matTooltip="Mark as Lost"
+                (click)="markAsLost(copy.copyId)"
+              >
+                <mat-icon>report</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                color="warn"
+                [disabled]="copy.status === 'Borrowed'"
+                [matTooltip]="
+                  copy.status === 'Borrowed' ? 'Cannot delete a borrowed copy' : 'Delete copy'
+                "
+                (click)="deleteCopy(copy.copyId)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noCopies>
+        <p class="empty-hint">No copies yet. Use "Add copies" to add stock.</p>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" mat-dialog-close>Close</button>
+  <button mat-flat-button type="button" (click)="openAddCopiesDialog()">Add copies</button>
+</mat-dialog-actions>

@@ -19,7 +19,7 @@ public class GetBooksHandler : IRequestHandler<GetBooksQuery, PagedResult<BookDt
         var page = Math.Max(request.Page, 1);
 
         var (items, totalCount) = await _bookRepository.GetAllAsync(
-            request.Search, page, pageSize, cancellationToken);
+            request.Search, request.Author, request.Publisher, page, pageSize, cancellationToken);
 
         var dtos = items.Select(b => new BookDto(
             b.BookId, b.Isbn, b.Title, b.Authors, b.Publisher, b.ImgUrl));

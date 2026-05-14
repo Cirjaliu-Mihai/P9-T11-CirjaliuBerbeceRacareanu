@@ -1,3 +1,4 @@
+using Application.Features.Copies.DeleteCopy;
 using Application.Features.Copies.UpdateCopyStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,14 @@ public class CopiesController : ControllerBase
         CancellationToken cancellationToken)
     {
         await _mediator.Send(new UpdateCopyStatusQuery(copyId, status), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{copyId}")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> Delete(int copyId, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new DeleteCopyCommand(copyId), cancellationToken);
         return NoContent();
     }
 }

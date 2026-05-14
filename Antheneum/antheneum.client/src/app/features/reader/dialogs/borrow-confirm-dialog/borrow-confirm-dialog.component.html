@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Confirm Borrow</h2>
+
+<mat-dialog-content>
+  <div class="borrow-summary">
+    <div class="summary-row">
+      <mat-icon>menu_book</mat-icon>
+      <div>
+        <p class="summary-label">Book</p>
+        <p class="summary-value">{{ data.bookTitle }}</p>
+      </div>
+    </div>
+    <div class="summary-row">
+      <mat-icon>location_on</mat-icon>
+      <div>
+        <p class="summary-label">Branch</p>
+        <p class="summary-value">{{ data.branchName }}</p>
+      </div>
+    </div>
+    <div class="summary-row">
+      <mat-icon>event</mat-icon>
+      <div>
+        <p class="summary-label">Return by</p>
+        <p class="summary-value return-date">{{ returnDate }}</p>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" [disabled]="isBorrowing" (click)="dialogRef.close(false)">
+    Cancel
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="isBorrowing"
+    (click)="confirm()"
+  >
+    {{ isBorrowing ? 'Borrowing…' : 'Confirm Borrow' }}
+  </button>
+</mat-dialog-actions>

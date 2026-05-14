@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>{{ book.title }}</h2>
+<p class="book-meta">{{ book.authors }}</p>
+
+<mat-dialog-content>
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <ng-container *ngIf="!isLoading">
+    <ng-container *ngIf="availability.length > 0; else noAvailability">
+      <div *ngFor="let group of groupedByBranch()" class="branch-group">
+        <h4 class="branch-name"><mat-icon>location_on</mat-icon>{{ group.branchName }}</h4>
+        <div *ngFor="let copy of group.copies" class="copy-row">
+          <mat-chip [color]="copy.status === 'Available' ? 'primary' : 'warn'" highlighted>
+            {{ copy.status }}
+          </mat-chip>
+
+          <ng-container *ngIf="copy.status === 'Available'">
+            <!-- Reader with active subscription -->
+            <button
+              *ngIf="isReader && isSubscribed"
+              mat-flat-button
+              color="primary"
+              (click)="borrowCopy(copy)"
+            >
+              Borrow
+            </button>
+            <!-- Reader without subscription -->
+            <ng-container *ngIf="isReader && !isSubscribed">
+              <a mat-stroked-button routerLink="/reader/checkout" (click)="dialogRef.close()">
+                Subscribe to borrow
+              </a>
+            </ng-container>
+            <!-- Guest -->
+            <ng-container *ngIf="!isReader">
+              <a mat-stroked-button routerLink="/auth" (click)="dialogRef.close()">
+                Sign in to borrow
+              </a>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noAvailability>
+      <div class="empty-state">
+        <mat-icon>inventory_2</mat-icon>
+        <p>No copies available in any branch.</p>
+      </div>
+    </ng-template>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="dialogRef.close()">Close</button>
+</mat-dialog-actions>

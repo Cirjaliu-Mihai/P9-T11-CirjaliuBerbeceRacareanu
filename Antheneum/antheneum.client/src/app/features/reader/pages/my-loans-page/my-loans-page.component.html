@@ -1,74 +1,105 @@
-<section class="page-grid page-grid--two">
-  <ng-container *ngIf="loans.myLoans$ | async as myLoans">
-    <mat-card class="panel">
-      <div class="panel-heading">
-        <div>
-          <p class="kicker">Reader dashboard</p>
-          <h3>My active loans</h3>
-        </div>
-        <mat-chip-set>
-          <mat-chip>{{ myLoans.length }} current items</mat-chip>
-        </mat-chip-set>
-      </div>
-
-      <div class="loan-grid">
-        <mat-card *ngFor="let loan of myLoans" class="loan-card">
-          <p>{{ loan.branchName }}</p>
-          <strong>{{ loan.bookTitle }}</strong>
-          <span>{{ loan.isbn }}</span>
-          <dl>
-            <div>
-              <dt>Borrowed</dt>
-              <dd>{{ loan.loanDate }}</dd>
-            </div>
-            <div>
-              <dt>Due</dt>
-              <dd>{{ loan.dueDate }}</dd>
-            </div>
-            <div>
-              <dt>Renewal</dt>
-              <dd>{{ loan.isRenewed ? 'Already renewed' : 'Eligible' }}</dd>
-            </div>
-          </dl>
-        </mat-card>
-      </div>
-    </mat-card>
-  </ng-container>
-
-  <mat-card class="panel">
-    <div class="panel-heading">
+<div class="loans-page">
+  <!-- Profile card -->
+  <mat-card class="profile-card" *ngIf="store.currentProfile$ | async as profile">
+    <div class="profile-header">
       <div>
         <p class="kicker">Reader profile</p>
-        <h3>Profile editing workflow</h3>
+        <h3>{{ profile.username }}</h3>
+        <p class="profile-meta">
+          {{ profile.email }} &nbsp;·&nbsp; Card {{ profile.libraryCardNumber }}
+        </p>
       </div>
-      <button mat-flat-button type="button" (click)="openProfileDialog()">Edit profile</button>
+      <div class="profile-actions">
+        <mat-chip [color]="profile.hasActiveSubscription ? 'primary' : 'warn'" highlighted>
+          {{
+            profile.hasActiveSubscription
+              ? 'Subscribed until ' + (profile.subscriptionExpiry | date: 'mediumDate')
+              : 'No subscription'
+          }}
+        </mat-chip>
+        <button mat-stroked-button type="button" (click)="openProfileDialog()">Edit profile</button>
+      </div>
     </div>
-
-    <div *ngIf="store.currentProfile$ | async as currentProfile; else noProfile" class="profile-card">
-      <strong>{{ currentProfile.username }}</strong>
-      <p>{{ currentProfile.email }}</p>
-      <dl>
-        <div>
-          <dt>Phone</dt>
-          <dd>{{ currentProfile.phone || 'Not set' }}</dd>
-        </div>
-        <div>
-          <dt>Address</dt>
-          <dd>{{ currentProfile.address || 'Not set' }}</dd>
-        </div>
-        <div>
-          <dt>Role</dt>
-          <dd>{{ currentProfile.role }}</dd>
-        </div>
-      </dl>
-    </div>
-
-    <ng-template #noProfile>
-      <mat-card class="empty-state">
-        <strong>No profile loaded</strong>
-        <p>The reader profile view will populate when authenticated reader data is available.</p>
-      </mat-card>
-    </ng-template>
-
   </mat-card>
-</section>
+
+  <!-- Active loans -->
+  <section>
+    <h3 class="section-title">
+      <mat-icon>library_books</mat-icon> Active Loans
+      <span class="count-badge">{{ activeLoans.length }}</span>
+    </h3>
+    <div class="loans-grid" *ngIf="activeLoans.length > 0; else noActive">
+      <mat-card class="loan-card" *ngFor="let loan of activeLoans">
+        <div class="loan-info">
+          <p class="loan-branch">{{ loan.branchName }}</p>
+          <strong class="loan-title">{{ loan.bookTitle }}</strong>
+          <span class="loan-isbn">{{ loan.isbn }}</span>
+        </div>
+        <div class="loan-meta">
+          <div class="loan-dates">
+            <span>Borrowed {{ loan.loanDate | date: 'mediumDate' }}</span>
+            <span class="separator">·</span>
+            <span>Due {{ loan.dueDate | date: 'mediumDate' }}</span>
+          </div>
+          <button
+            mat-stroked-button
+            [disabled]="loan.isRenewed"
+            [matTooltip]="loan.isRenewed ? 'Already renewed once' : 'Extend due date by 14 days'"
+            (click)="renewLoan(loan)"
+          >
+            {{ loan.isRenewed ? 'Renewed' : 'Renew' }}
+          </button>
+        </div>
+      </mat-card>
+    </div>
+    <ng-template #noActive>
+      <p class="empty-msg">No active loans.</p>
+    </ng-template>
+  </section>
+
+  <!-- Overdue loans -->
+  <section *ngIf="overdueLoans.length > 0">
+    <h3 class="section-title warn">
+      <mat-icon>warning</mat-icon> Overdue
+      <span class="count-badge warn">{{ overdueLoans.length }}</span>
+    </h3>
+    <div class="loans-grid">
+      <mat-card class="loan-card overdue" *ngFor="let loan of overdueLoans">
+        <div class="loan-info">
+          <p class="loan-branch">{{ loan.branchName }}</p>
+          <strong class="loan-title">{{ loan.bookTitle }}</strong>
+        </div>
+        <div class="loan-meta">
+          <div class="loan-dates">
+            <span>Due {{ loan.dueDate | date: 'mediumDate' }}</span>
+            <mat-chip color="warn" highlighted class="overdue-chip">
+              {{ overdueDays(loan) }} day{{ overdueDays(loan) === 1 ? '' : 's' }} overdue
+            </mat-chip>
+          </div>
+          <button
+            mat-stroked-button
+            color="warn"
+            [disabled]="loan.isRenewed"
+            [matTooltip]="loan.isRenewed ? 'Already renewed once' : 'Renew loan'"
+            (click)="renewLoan(loan)"
+          >
+            {{ loan.isRenewed ? 'Renewed' : 'Renew' }}
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- Past loans -->
+  <section *ngIf="pastLoans.length > 0">
+    <h3 class="section-title muted"><mat-icon>history</mat-icon> Past Loans</h3>
+    <div class="past-list">
+      <div class="past-item" *ngFor="let loan of pastLoans">
+        <span class="past-title">{{ loan.bookTitle }}</span>
+        <span class="past-meta"
+          >{{ loan.branchName }} · Returned {{ loan.actualReturnDate | date: 'mediumDate' }}</span
+        >
+      </div>
+    </div>
+  </section>
+</div>

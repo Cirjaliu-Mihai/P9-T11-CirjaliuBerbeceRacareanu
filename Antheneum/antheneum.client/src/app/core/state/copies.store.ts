@@ -32,14 +32,41 @@ export class CopiesStore {
     this.copies = [];
     this.isLoading = true;
 
-    this.copiesService.getByBook(bookId)
-      .pipe(finalize(() => { this.isLoading = false; }))
-      .subscribe({ next: (copies) => { this.copies = copies; } });
+    this.copiesService
+      .getByBook(bookId)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      )
+      .subscribe({
+        next: (copies) => {
+          this.copies = copies;
+        },
+      });
   }
 
   addCopies(bookId: number, branchId: number, count: number) {
     return this.copiesService.add(bookId, branchId, count).pipe(
-      tap(() => { this.loadCopies(bookId); }),
+      tap(() => {
+        this.loadCopies(bookId);
+      }),
+    );
+  }
+
+  deleteCopy(copyId: number) {
+    return this.copiesService.delete(copyId).pipe(
+      tap(() => {
+        this.copies = this.copies.filter((c) => c.copyId !== copyId);
+      }),
+    );
+  }
+
+  updateStatus(copyId: number, status: string) {
+    return this.copiesService.updateStatus(copyId, status).pipe(
+      tap(() => {
+        this.copies = this.copies.map((c) => (c.copyId === copyId ? { ...c, status } : c));
+      }),
     );
   }
 }

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'auth' },
+  { path: '', pathMatch: 'full', redirectTo: 'reader' },
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.module').then((m) => m.AuthModule),
@@ -15,7 +15,7 @@ const routes: Routes = [
     path: 'reader',
     loadChildren: () => import('./features/reader/reader.module').then((m) => m.ReaderModule),
   },
-  { path: '**', redirectTo: 'auth' },
+  { path: '**', redirectTo: 'reader' },
 ];
 
 @NgModule({

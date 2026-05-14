@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BookFormValue } from '../../../../models/library/book-form-value.model';
 
@@ -15,15 +15,13 @@ interface BookDialogData {
   standalone: false,
 })
 export class BookEditorDialogComponent {
-  draft: BookFormValue;
+  readonly dialogRef =
+    inject<MatDialogRef<BookEditorDialogComponent, { value: BookFormValue; file: File | null }>>(
+      MatDialogRef,
+    );
+  readonly data = inject<BookDialogData>(MAT_DIALOG_DATA);
+  draft: BookFormValue = { ...this.data.value };
   selectedFile: File | null = null;
-
-  constructor(
-    public readonly dialogRef: MatDialogRef<BookEditorDialogComponent, { value: BookFormValue; file: File | null }>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: BookDialogData,
-  ) {
-    this.draft = { ...data.value };
-  }
 
   onFileSelected(event: Event) {
     const target = event.target as HTMLInputElement;

@@ -5,7 +5,7 @@ namespace Domain.Interfaces;
 public interface IBookRepository
 {
     Task<(IEnumerable<BookModel> Items, int TotalCount)> GetAllAsync(
-        string? search, int page, int pageSize, CancellationToken cancellationToken = default);
+        string? search, string? author, string? publisher, int page, int pageSize, CancellationToken cancellationToken = default);
 
     Task<BookModel?> GetByIdAsync(int bookId, CancellationToken cancellationToken = default);
 
@@ -26,6 +26,8 @@ public interface IBookRepository
     Task<bool> CopyExistsAsync(int copyId, CancellationToken cancellationToken = default);
 
     Task UpdateCopyStatusAsync(int copyId, string status, CancellationToken cancellationToken = default);
+
+    Task DeleteCopyAsync(int copyId, CancellationToken cancellationToken = default);
 
     Task<bool> BranchExistsAsync(int branchId, CancellationToken cancellationToken = default);
 }

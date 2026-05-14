@@ -1,15 +1,27 @@
-.book-selector {
-  width: 360px;
+.copies-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
 }
 
-.book-search-input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  color: inherit;
-  padding: 0;
+.copies-table th,
+.copies-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.copies-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copy-id {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-outline);
 }
 
 .borrower-cell {
@@ -17,9 +29,15 @@
   font-size: 0.875rem;
 }
 
-.copy-id {
-  font-variant-numeric: tabular-nums;
-  color: var(--mat-sys-outline);
+.actions-cell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.empty-hint {
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+  padding: 24px 0;
 }
 
 .status-available {

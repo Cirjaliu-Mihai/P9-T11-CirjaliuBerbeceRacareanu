@@ -160,6 +160,54 @@ public class LoanRepository : ILoanRepository
         return copy?.Status is null or "Available";
     }
 
+    public async Task<IEnumerable<OverdueReportModel>> SearchActiveLoansAsync(string username, CancellationToken cancellationToken = default)
+    {
+        var term = username.Trim().ToLower();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var loans = await _context.Loans
+            .AsNoTracking()
+            .Include(l => l.Reader).ThenInclude(r => r.User)
+            .Include(l => l.Copy).ThenInclude(c => c.Branch)
+            .Include(l => l.Copy).ThenInclude(c => c.Book)
+            .Where(l => l.Actualreturndate == null && l.Reader.User.Username.ToLower().Contains(term))
+            .ToListAsync(cancellationToken);
+
+        if (loans.Count == 0)
+            return [];
+
+        var loanIds = loans.Select(l => l.Loanid).ToList();
+
+        var penaltyTotals = await _context.Unwantedclients
+            .AsNoTracking()
+            .Where(u => u.Loanid != null && loanIds.Contains(u.Loanid!.Value))
+            .GroupBy(u => u.Loanid!.Value)
+            .Select(g => new { LoanId = g.Key, Total = g.Sum(u => u.Penaltyamount ?? 0m) })
+            .ToListAsync(cancellationToken);
+
+        var penaltyDict = penaltyTotals.ToDictionary(p => p.LoanId, p => p.Total);
+
+        return loans
+            .Select(l => new OverdueReportModel
+            {
+                ReaderId = l.Readerid,
+                Username = l.Reader.User.Username,
+                Email = l.Reader.User.Email,
+                LibraryCardNumber = l.Reader.Librarycardnumber,
+                LoanId = l.Loanid,
+                BranchId = l.Copy.Branchid,
+                BranchName = l.Copy.Branch.Name,
+                BookTitle = l.Copy.Book.Title,
+                LoanDate = l.Loandate,
+                DueDate = l.Duedate,
+                OverdueDays = Math.Max(0, today.DayNumber - l.Duedate.DayNumber),
+                LoanFineTotal = penaltyDict.TryGetValue(l.Loanid, out var fine) ? fine : 0m
+            })
+            .OrderBy(r => r.Username)
+            .ThenByDescending(r => r.OverdueDays)
+            .ToList();
+    }
+
     private async Task<LoanModel> GetByIdInternalAsync(int loanId, CancellationToken cancellationToken)
     {
         var loan = await _context.Loans
@@ -172,5 +220,38 @@ public class LoanRepository : ILoanRepository
             ?? throw new KeyNotFoundException($"Loan {loanId} not found.");
 
         return _mapper.Map<LoanModel>(loan);
+    }
+
+    public async Task<bool> IsReaderSubscribedAsync(int readerId, CancellationToken cancellationToken = default)
+    {
+        var reader = await _context.Readers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Readerid == readerId, cancellationToken);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        return reader?.Subscriptionexpiry.HasValue == true && reader.Subscriptionexpiry.Value >= today;
+    }
+
+    public async Task<IEnumerable<ReaderPenaltyModel>> GetUnresolvedPenaltiesForReaderAsync(int readerId, CancellationToken cancellationToken = default)
+    {
+        var penalties = await _context.Unwantedclients
+            .AsNoTracking()
+            .Include(u => u.Loan)
+                .ThenInclude(l => l!.Copy)
+                    .ThenInclude(c => c.Book)
+            .Include(u => u.Loan)
+                .ThenInclude(l => l!.Copy)
+                    .ThenInclude(c => c.Branch)
+            .Where(u => u.Readerid == readerId && u.Isresolved != true)
+            .ToListAsync(cancellationToken);
+
+        return penalties.Select(u => new ReaderPenaltyModel
+        {
+            PenaltyId = u.Penaltyid,
+            BookTitle = u.Loan?.Copy?.Book?.Title ?? "Unknown",
+            BranchName = u.Loan?.Copy?.Branch?.Name ?? "Unknown",
+            Reason = u.Reason,
+            Amount = u.Penaltyamount ?? 0m,
+        });
     }
 }

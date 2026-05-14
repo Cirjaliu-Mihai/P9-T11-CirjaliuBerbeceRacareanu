@@ -12,16 +12,31 @@
     <form *ngIf="mode === 'login'; else registerForm" class="auth-form" (ngSubmit)="submitLogin()">
       <mat-form-field appearance="outline">
         <mat-label>Username</mat-label>
-        <input matInput name="loginUsername" [(ngModel)]="login.username" autocomplete="username" required>
+        <input
+          matInput
+          name="loginUsername"
+          [(ngModel)]="login.username"
+          autocomplete="username"
+          required
+        />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput name="loginPassword" [(ngModel)]="login.password" type="password" autocomplete="current-password" required>
+        <input
+          matInput
+          name="loginPassword"
+          [(ngModel)]="login.password"
+          type="password"
+          autocomplete="current-password"
+          required
+        />
       </mat-form-field>
 
       <p *ngIf="errorMessage" class="auth-feedback auth-feedback--error">{{ errorMessage }}</p>
-      <p *ngIf="successMessage" class="auth-feedback auth-feedback--success">{{ successMessage }}</p>
+      <p *ngIf="successMessage" class="auth-feedback auth-feedback--success">
+        {{ successMessage }}
+      </p>
 
       <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
@@ -36,28 +51,55 @@
       <form class="auth-form" (ngSubmit)="submitRegister()">
         <mat-form-field appearance="outline">
           <mat-label>Username</mat-label>
-          <input matInput name="registerUsername" [(ngModel)]="register.username" autocomplete="username" required>
+          <input
+            matInput
+            name="registerUsername"
+            [(ngModel)]="register.username"
+            autocomplete="username"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput name="registerEmail" [(ngModel)]="register.email" type="email" autocomplete="email" required>
+          <input
+            matInput
+            name="registerEmail"
+            [(ngModel)]="register.email"
+            type="email"
+            autocomplete="email"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput name="registerPassword" [(ngModel)]="register.password" type="password" autocomplete="new-password" required>
+          <input
+            matInput
+            name="registerPassword"
+            [(ngModel)]="register.password"
+            type="password"
+            autocomplete="new-password"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Confirm password</mat-label>
-          <input matInput name="confirmPassword" [(ngModel)]="confirmPassword" type="password" autocomplete="new-password" required>
+          <input
+            matInput
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            required
+          />
         </mat-form-field>
 
-        <p class="auth-note">New accounts are created with the Reader role.</p>
-
         <p *ngIf="errorMessage" class="auth-feedback auth-feedback--error">{{ errorMessage }}</p>
-        <p *ngIf="successMessage" class="auth-feedback auth-feedback--success">{{ successMessage }}</p>
+        <p *ngIf="successMessage" class="auth-feedback auth-feedback--success">
+          {{ successMessage }}
+        </p>
 
         <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Creating account...' : 'Create account' }}

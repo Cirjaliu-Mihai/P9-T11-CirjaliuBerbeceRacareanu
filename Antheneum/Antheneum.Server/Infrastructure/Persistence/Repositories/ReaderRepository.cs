@@ -142,4 +142,13 @@ public class ReaderRepository : IReaderRepository
         penalty.Reader.Isblacklisted = hasUnresolvedPenalties;
         await _context.SaveChangesAsync(ct);
     }
+
+    public async Task UpdateSubscriptionAsync(int readerId, DateOnly expiry, CancellationToken ct = default)
+    {
+        var reader = await _context.Readers.FindAsync([readerId], ct)
+            ?? throw new KeyNotFoundException($"Reader with ID {readerId} was not found.");
+
+        reader.Subscriptionexpiry = expiry;
+        await _context.SaveChangesAsync(ct);
+    }
 }

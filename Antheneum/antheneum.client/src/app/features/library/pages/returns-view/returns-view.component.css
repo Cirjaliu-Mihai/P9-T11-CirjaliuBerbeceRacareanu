@@ -1,1 +1,19 @@
 :host {}
+
+.candidates-table {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.candidates-table td,
+.candidates-table th {
+  padding: 0.5rem 0.75rem;
+}
+
+.candidates-table tbody tr {
+  cursor: pointer;
+}
+
+.candidates-table tbody tr:hover {
+  background: var(--mat-sys-surface-variant);
+}

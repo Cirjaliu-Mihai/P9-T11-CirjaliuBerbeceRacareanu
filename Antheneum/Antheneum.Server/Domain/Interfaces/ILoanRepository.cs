@@ -27,4 +27,10 @@ public interface ILoanRepository
     Task<IEnumerable<LoanModel>> GetByReaderIdAsync(int readerId, CancellationToken cancellationToken = default);
 
     Task<bool> IsCopyAvailableAsync(int copyId, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<OverdueReportModel>> SearchActiveLoansAsync(string username, CancellationToken cancellationToken = default);
+
+    Task<bool> IsReaderSubscribedAsync(int readerId, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<ReaderPenaltyModel>> GetUnresolvedPenaltiesForReaderAsync(int readerId, CancellationToken cancellationToken = default);
 }
