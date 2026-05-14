@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ProfileFormValue } from './admin-dashboard.store';
+import { ProfileFormValue } from '../admin/admin-dashboard.store';
 
 type ProfileDialogData = {
   value: ProfileFormValue;

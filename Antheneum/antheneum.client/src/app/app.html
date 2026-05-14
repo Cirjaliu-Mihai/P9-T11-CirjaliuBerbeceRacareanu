@@ -1,69 +1,23 @@
+<ng-container *ngIf="auth.isAuthenticated(); else authOutlet">
 <div class="app-shell">
-    <header class="shell-header panel">
-        <div class="brand-block brand-block--header">
-            <div>
-                <p class="kicker">Antheneum</p>
-                <h1 class="rail-title">Control room</h1>
-            </div>
-            <div class="shell-meta">
-                <p class="rail-copy">Admin dashboard and reports workspace for the library operations rollout.</p>
-                <mat-chip-set>
-                    <mat-chip>Operations suite</mat-chip>
-                </mat-chip-set>
-            </div>
-        </div>
-
-        <nav class="top-nav" aria-label="Dashboard sections">
-            <a
-                *ngFor="let section of sections"
-                class="nav-chip"
-                [routerLink]="section.path"
-                routerLinkActive="is-active">
-                <span class="nav-chip__label">{{ section.label }}</span>
-                <span class="nav-chip__meta">{{ section.eyebrow }}</span>
-            </a>
-        </nav>
-    </header>
+    <app-shell-navbar
+        [workspaceEyebrow]="workspaceEyebrow"
+        [workspaceTitle]="workspaceTitle"
+        [sections]="sections"
+        [username]="auth.username()"
+        (signOut)="logout()">
+    </app-shell-navbar>
 
     <main class="workspace">
         <mat-progress-bar *ngIf="store.isLoading" mode="indeterminate"></mat-progress-bar>
-
-        <mat-card class="hero-card panel">
-            <div class="hero-card__content">
-                <p class="kicker">Library operations</p>
-                <h2>Modern admin control across branches, readers, and reports.</h2>
-                <p class="hero-copy">A brighter, streamlined workspace for day-to-day catalog, circulation, and reporting activity with live data flowing in automatically.</p>
-            </div>
-
-            <div class="hero-card__spotlight">
-                <div class="hero-actions">
-                    <mat-chip-set>
-                        <mat-chip>Live data</mat-chip>
-                    </mat-chip-set>
-                </div>
-
-                <div class="spotlight-grid">
-                    <div class="spotlight-stat">
-                        <span>Workspace</span>
-                        <strong>Unified</strong>
-                    </div>
-                    <div class="spotlight-stat">
-                        <span>Navigation</span>
-                        <strong>Top-level</strong>
-                    </div>
-                </div>
-            </div>
-        </mat-card>
-
-        <section class="metric-grid">
-            <mat-card *ngFor="let metric of store.metrics" class="metric-card panel" [attr.data-tone]="metric.tone">
-                <p>{{ metric.label }}</p>
-                <strong>{{ metric.value }}</strong>
-            </mat-card>
-        </section>
 
         <div class="router-slot">
             <router-outlet></router-outlet>
         </div>
     </main>
 </div>
+</ng-container>
+
+<ng-template #authOutlet>
+    <router-outlet></router-outlet>
+</ng-template>

@@ -23,7 +23,7 @@ type DeleteDialogData = {
   selector: 'app-branch-editor-dialog',
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
+    <mat-dialog-content class="editor-dialog-content">
       <div class="field-grid">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
@@ -57,7 +57,7 @@ export class BranchEditorDialogComponent {
   selector: 'app-book-editor-dialog',
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
+    <mat-dialog-content class="editor-dialog-content">
       <div class="field-grid field-grid--wide">
         <mat-form-field appearance="outline">
           <mat-label>ISBN</mat-label>

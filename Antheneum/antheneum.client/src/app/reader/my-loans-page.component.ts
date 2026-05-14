@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AdminDashboardStore, ProfileFormValue } from './admin-dashboard.store';
+import { AdminDashboardStore, ProfileFormValue } from '../admin/admin-dashboard.store';
 import { ProfileEditorDialogComponent } from './profile-dialog.component';
 
 @Component({

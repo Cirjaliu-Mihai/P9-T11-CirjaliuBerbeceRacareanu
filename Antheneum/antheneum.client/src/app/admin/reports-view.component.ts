@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AdminDashboardStore } from './admin-dashboard.store';
 
 @Component({
-  selector: 'app-reports-page',
+  selector: 'app-reports-view',
   template: `
     <mat-card class="panel">
       <div class="panel-heading">
@@ -156,6 +156,6 @@ import { AdminDashboardStore } from './admin-dashboard.store';
   `,
   standalone: false,
 })
-export class ReportsPageComponent {
+export class ReportsViewComponent {
   constructor(public readonly store: AdminDashboardStore) {}
 }

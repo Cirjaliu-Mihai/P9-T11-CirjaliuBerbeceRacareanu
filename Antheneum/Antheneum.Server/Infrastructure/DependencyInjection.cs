@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -36,7 +35,6 @@ public static class DependencyInjection
 
         var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
         var secret = configuration["Jwt:Secret"];
-        var authBypassEnabled = env.IsDevelopment() && configuration.GetValue<bool>("Authentication:BypassEnabled");
 
         if (!string.IsNullOrWhiteSpace(secret))
         {
@@ -55,7 +53,7 @@ public static class DependencyInjection
                 };
             });
         }
-        else if (!authBypassEnabled)
+        else
         {
             throw new InvalidOperationException("JWT secret is not configured.");
         }

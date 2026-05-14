@@ -1,0 +1,34 @@
+:host {
+    display: block;
+}
+
+.brand-block {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.5rem 0.25rem;
+}
+
+.brand-block--header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+    padding: 0.25rem 0.25rem 0;
+}
+
+.shell-meta {
+    display: grid;
+    justify-items: end;
+    gap: 0.65rem;
+    text-align: right;
+}
+
+@media (max-width: 720px) {
+    .brand-block--header {
+        grid-template-columns: 1fr;
+    }
+
+    .shell-meta {
+        justify-items: start;
+        text-align: left;
+    }
+}

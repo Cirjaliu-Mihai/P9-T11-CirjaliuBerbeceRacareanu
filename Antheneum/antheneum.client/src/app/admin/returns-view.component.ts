@@ -3,7 +3,7 @@ import { BlacklistReport } from './admin-dashboard.models';
 import { AdminDashboardStore } from './admin-dashboard.store';
 
 @Component({
-  selector: 'app-returns-page',
+  selector: 'app-returns-view',
   template: `
     <section class="page-grid page-grid--two">
       <mat-card class="panel">
@@ -92,7 +92,7 @@ import { AdminDashboardStore } from './admin-dashboard.store';
   `,
   standalone: false,
 })
-export class ReturnsPageComponent {
+export class ReturnsViewComponent {
   constructor(public readonly store: AdminDashboardStore) {}
 
   confirmReturn() {

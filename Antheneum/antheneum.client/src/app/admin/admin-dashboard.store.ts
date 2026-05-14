@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { finalize, forkJoin, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, forkJoin, Observable, of, tap, throwError } from 'rxjs';
 import {
   BlacklistReport,
   Book,
@@ -13,6 +13,7 @@ import {
   ReturnCandidate,
   TransactionReport,
 } from './admin-dashboard.models';
+import { AuthRole } from '../auth/auth.models';
 import { AdminDashboardService } from './admin-dashboard.service';
 
 export interface BranchFormValue {
@@ -36,6 +37,9 @@ export interface ProfileFormValue {
 
 @Injectable({ providedIn: 'root' })
 export class AdminDashboardStore {
+  private viewerRole: AuthRole | null = null;
+  private nextTemporaryId = -1;
+
   selectedReportType: ReportType = 'inventory';
   selectedBranchId = '';
   reportFrom = this.getIsoDate(-30);
@@ -70,6 +74,18 @@ export class AdminDashboardStore {
   constructor(private readonly dashboardService: AdminDashboardService) {}
 
   get metrics() {
+    if (this.viewerRole === 'Reader') {
+      const activeLoans = this.myLoans.filter((loan) => loan.isActive).length;
+      const overdueLoans = this.myLoans.filter((loan) => loan.isActive && new Date(loan.dueDate) < new Date()).length;
+
+      return [
+        { label: 'Catalog snapshot', value: this.books.length, tone: 'sun' },
+        { label: 'Active loans', value: activeLoans, tone: 'ocean' },
+        { label: 'Overdue items', value: overdueLoans, tone: 'ember' },
+        { label: 'Profile status', value: this.currentProfile ? 'Linked' : 'Pending', tone: 'mint' },
+      ];
+    }
+
     const activeLoans = this.myLoans.filter((loan) => loan.isActive).length;
     const overdueLoans = this.overdueReport.length;
     const totalBooks = this.books.length;
@@ -93,7 +109,32 @@ export class AdminDashboardStore {
     return this.branches.find((branch) => branch.branchId === branchId)?.name ?? 'Selected branch';
   }
 
+  setViewerRole(role: AuthRole | null) {
+    if (this.viewerRole === role && (role === null || this.initialized)) {
+      return;
+    }
+
+    this.viewerRole = role;
+    this.initialized = false;
+    this.resetDashboardData();
+    this.reportStatus = role === 'Administrator'
+      ? 'Select a report type and generate a view.'
+      : role === 'Reader'
+        ? 'Reader workspace ready.'
+        : 'Sign in to load workspace data.';
+
+    if (role) {
+      this.ensureLoaded();
+    } else {
+      this.isLoading = false;
+    }
+  }
+
   ensureLoaded() {
+    if (!this.viewerRole || this.initialized) {
+      return;
+    }
+
     if (!this.initialized) {
       this.initialized = true;
       this.loadDashboard();
@@ -101,37 +142,18 @@ export class AdminDashboardStore {
   }
 
   loadDashboard() {
-    this.isLoading = true;
+    if (this.viewerRole === 'Administrator') {
+      this.loadAdministratorDashboard();
+      return;
+    }
 
-    forkJoin({
-      branches: this.dashboardService.getBranches(),
-      books: this.dashboardService.getBooks('', 1, 6),
-      readers: this.dashboardService.getReaders('', this.readerSort),
-      myLoans: this.dashboardService.getMyLoans(),
-      overdue: this.dashboardService.getOverdueReport(null, 1, 6),
-      blacklist: this.dashboardService.getBlacklistReport(null, 1, 6),
-    }).pipe(
-      finalize(() => {
-        this.isLoading = false;
-      }),
-    ).subscribe({
-      next: ({ branches, books, readers, myLoans, overdue, blacklist }) => {
-        this.branches = branches;
-        this.books = books.items;
-        this.readers = readers;
-        this.myLoans = myLoans;
-        this.overdueReport = overdue.items;
-        this.blacklistReport = blacklist.items;
-        this.syncCurrentProfile();
-        this.applyReaderFilters();
-        this.lookupReturn();
-        this.generateReport();
-      },
-      error: () => {
-        this.resetDashboardData();
-        this.reportStatus = 'Unable to load dashboard data from the API.';
-      },
-    });
+    if (this.viewerRole === 'Reader') {
+      this.loadReaderDashboard();
+      return;
+    }
+
+    this.resetDashboardData();
+    this.isLoading = false;
   }
 
   applyReaderFilters() {
@@ -164,6 +186,19 @@ export class AdminDashboardStore {
       return of(reader);
     }
 
+    const previousReaders = this.readers;
+    const previousCurrentProfile = this.currentProfile;
+
+    this.readers = this.readers.map((item) => item.readerId === reader.readerId
+      ? { ...item, role: nextRole }
+      : item);
+
+    if (this.currentProfile?.readerId === reader.readerId) {
+      this.currentProfile = { ...this.currentProfile, role: nextRole };
+    }
+
+    this.applyReaderFilters();
+
     return this.dashboardService.changeReaderRole(reader.readerId, nextRole).pipe(
       tap((updated) => {
         const target = this.readers.find((item) => item.readerId === reader.readerId);
@@ -176,6 +211,12 @@ export class AdminDashboardStore {
         }
 
         this.applyReaderFilters();
+      }),
+      catchError((error) => {
+        this.readers = previousReaders;
+        this.currentProfile = previousCurrentProfile;
+        this.applyReaderFilters();
+        return throwError(() => error);
       }),
     );
   }
@@ -225,6 +266,12 @@ export class AdminDashboardStore {
   }
 
   generateReport() {
+    if (this.viewerRole !== 'Administrator') {
+      this.isReportLoading = false;
+      this.clearReportData();
+      return;
+    }
+
     this.isReportLoading = true;
     const branchId = this.selectedBranchId ? Number(this.selectedBranchId) : null;
 
@@ -270,58 +317,124 @@ export class AdminDashboardStore {
       address: value.address.trim() || null,
     };
 
+    const temporaryBranch: Branch = {
+      branchId: this.consumeTemporaryId(),
+      uniqueNumber: 'Pending',
+      ...payload,
+    };
+
+    this.branches = [temporaryBranch, ...this.branches];
+
     return this.dashboardService.createBranch(payload).pipe(
       tap((branch) => {
-        this.branches = [branch, ...this.branches];
+        this.branches = this.branches.map((item) => item.branchId === temporaryBranch.branchId ? branch : item);
+      }),
+      catchError((error) => {
+        this.branches = this.branches.filter((item) => item.branchId !== temporaryBranch.branchId);
+        return throwError(() => error);
       }),
     );
   }
 
   updateBranch(branchId: number, value: BranchFormValue): Observable<Branch> {
+    const previousBranches = this.branches;
+    const currentBranch = this.branches.find((item) => item.branchId === branchId);
     const payload = {
       name: value.name.trim(),
       address: value.address.trim() || null,
     };
 
+    if (currentBranch) {
+      const optimisticBranch: Branch = {
+        ...currentBranch,
+        ...payload,
+      };
+
+      this.branches = this.branches.map((item) => item.branchId === branchId ? optimisticBranch : item);
+    }
+
     return this.dashboardService.updateBranch(branchId, payload).pipe(
       tap((branch) => {
         this.branches = this.branches.map((item) => item.branchId === branchId ? branch : item);
+      }),
+      catchError((error) => {
+        this.branches = previousBranches;
+        return throwError(() => error);
       }),
     );
   }
 
   deleteBranch(branchId: number): Observable<void> {
+    const previousBranches = this.branches;
+    this.branches = this.branches.filter((item) => item.branchId !== branchId);
+
     return this.dashboardService.deleteBranch(branchId).pipe(
-      tap(() => {
-        this.branches = this.branches.filter((item) => item.branchId !== branchId);
+      catchError((error) => {
+        this.branches = previousBranches;
+        return throwError(() => error);
       }),
     );
   }
 
   createBook(value: BookFormValue, coverFile: File | null): Observable<Book> {
     const formData = this.buildBookFormData(value, coverFile, false);
+    const temporaryBook: Book = {
+      bookId: this.consumeTemporaryId(),
+      isbn: value.isbn.trim(),
+      title: value.title.trim(),
+      authors: value.authors.trim() || null,
+      publisher: value.publisher.trim() || null,
+      imgUrl: null,
+    };
+
+    this.books = [temporaryBook, ...this.books];
 
     return this.dashboardService.createBook(formData).pipe(
       tap((book) => {
-        this.books = [book, ...this.books];
+        this.books = this.books.map((item) => item.bookId === temporaryBook.bookId ? book : item);
+      }),
+      catchError((error) => {
+        this.books = this.books.filter((item) => item.bookId !== temporaryBook.bookId);
+        return throwError(() => error);
       }),
     );
   }
 
   updateBook(bookId: number, value: BookFormValue, coverFile: File | null): Observable<Book> {
+    const previousBooks = this.books;
+    const currentBook = this.books.find((item) => item.bookId === bookId);
     const formData = this.buildBookFormData(value, coverFile, true);
+
+    if (currentBook) {
+      const optimisticBook: Book = {
+        ...currentBook,
+        title: value.title.trim(),
+        authors: value.authors.trim() || null,
+        publisher: value.publisher.trim() || null,
+      };
+
+      this.books = this.books.map((item) => item.bookId === bookId ? optimisticBook : item);
+    }
 
     return this.dashboardService.updateBook(bookId, formData).pipe(
       tap((book) => {
         this.books = this.books.map((item) => item.bookId === bookId ? book : item);
       }),
+      catchError((error) => {
+        this.books = previousBooks;
+        return throwError(() => error);
+      }),
     );
   }
 
   deleteBook(bookId: number): Observable<void> {
+    const previousBooks = this.books;
+    this.books = this.books.filter((item) => item.bookId !== bookId);
+
     return this.dashboardService.deleteBook(bookId).pipe(
-      tap(() => {
-        this.books = this.books.filter((item) => item.bookId !== bookId);
+      catchError((error) => {
+        this.books = previousBooks;
+        return throwError(() => error);
       }),
     );
   }
@@ -383,6 +496,70 @@ export class AdminDashboardStore {
     this.currentProfile = this.readers.find((reader) => reader.role === 'Reader') ?? this.readers[0] ?? null;
   }
 
+  private loadAdministratorDashboard() {
+    this.isLoading = true;
+
+    forkJoin({
+      branches: this.dashboardService.getBranches(),
+      books: this.dashboardService.getBooks('', 1, 6),
+      readers: this.dashboardService.getReaders('', this.readerSort),
+      overdue: this.dashboardService.getOverdueReport(null, 1, 6),
+      blacklist: this.dashboardService.getBlacklistReport(null, 1, 6),
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      }),
+    ).subscribe({
+      next: ({ branches, books, readers, overdue, blacklist }) => {
+        this.branches = branches;
+        this.books = books.items;
+        this.readers = readers;
+        this.myLoans = [];
+        this.overdueReport = overdue.items;
+        this.blacklistReport = blacklist.items;
+        this.syncCurrentProfile();
+        this.applyReaderFilters();
+        this.lookupReturn();
+        this.generateReport();
+      },
+      error: () => {
+        this.resetDashboardData();
+        this.reportStatus = 'Unable to load administrator workspace data from the API.';
+      },
+    });
+  }
+
+  private loadReaderDashboard() {
+    this.isLoading = true;
+
+    forkJoin({
+      books: this.dashboardService.getBooks('', 1, 6),
+      myLoans: this.dashboardService.getMyLoans(),
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      }),
+    ).subscribe({
+      next: ({ books, myLoans }) => {
+        this.books = books.items;
+        this.myLoans = myLoans;
+        this.branches = [];
+        this.readers = [];
+        this.filteredReaders = [];
+        this.inventoryReport = [];
+        this.overdueReport = [];
+        this.blacklistReport = [];
+        this.transactionReport = [];
+        this.selectedReturn = null;
+        this.reportStatus = 'Reader workspace ready.';
+      },
+      error: () => {
+        this.resetDashboardData();
+        this.reportStatus = 'Unable to load reader workspace data from the API.';
+      },
+    });
+  }
+
   private resetDashboardData() {
     this.branches = [];
     this.books = [];
@@ -395,6 +572,7 @@ export class AdminDashboardStore {
     this.transactionReport = [];
     this.selectedReturn = null;
     this.currentProfile = null;
+    this.isReportLoading = false;
   }
 
   private clearReportData() {
@@ -419,5 +597,9 @@ export class AdminDashboardStore {
     const date = new Date();
     date.setDate(date.getDate() + offsetDays);
     return date.toISOString().slice(0, 10);
+  }
+
+  private consumeTemporaryId() {
+    return this.nextTemporaryId--;
   }
 }

@@ -3,13 +3,13 @@ import { Reader } from './admin-dashboard.models';
 import { AdminDashboardStore } from './admin-dashboard.store';
 
 @Component({
-  selector: 'app-reader-management-page',
+  selector: 'app-user-view',
   template: `
     <mat-card class="panel">
       <div class="panel-heading">
         <div>
-          <p class="kicker">Reader management</p>
-          <h3>Searchable staff table</h3>
+          <p class="kicker">User management</p>
+          <h3>Searchable user table</h3>
         </div>
 
         <div class="toolbar">
@@ -33,7 +33,7 @@ import { AdminDashboardStore } from './admin-dashboard.store';
         <table>
           <thead>
             <tr>
-              <th>Reader</th>
+              <th>User</th>
               <th>Contact</th>
               <th>Card</th>
               <th>Status</th>
@@ -72,7 +72,7 @@ import { AdminDashboardStore } from './admin-dashboard.store';
   `,
   standalone: false,
 })
-export class ReaderManagementPageComponent {
+export class UserViewComponent {
   constructor(public readonly store: AdminDashboardStore) {}
 
   updateRole(reader: Reader, nextRole: string) {
