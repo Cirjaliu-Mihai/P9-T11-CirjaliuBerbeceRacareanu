@@ -1,0 +1,43 @@
+.book-selector {
+  width: 360px;
+}
+
+.book-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+}
+
+.borrower-cell {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+}
+
+.copy-id {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-outline);
+}
+
+.status-available {
+  --mdc-chip-label-text-color: #1a6b3c;
+  --mdc-chip-container-color: #d4f4e2;
+}
+
+.status-borrowed {
+  --mdc-chip-label-text-color: #7a4e00;
+  --mdc-chip-container-color: #fff0cc;
+}
+
+.status-lost {
+  --mdc-chip-label-text-color: #8b1a1a;
+  --mdc-chip-container-color: #fde8e8;
+}
+
+.status-unknown {
+  --mdc-chip-label-text-color: var(--mat-sys-on-surface-variant);
+  --mdc-chip-container-color: var(--mat-sys-surface-variant);
+}

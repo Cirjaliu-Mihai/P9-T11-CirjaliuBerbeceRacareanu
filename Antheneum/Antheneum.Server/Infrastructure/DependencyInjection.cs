@@ -33,11 +33,12 @@ public static class DependencyInjection
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
         services.AddSingleton<IFileStorageService>(_ => new LocalFileStorageService(env));
 
-        var secret = configuration["Jwt:Secret"]
-            ?? throw new InvalidOperationException("JWT secret is not configured.");
+        var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+        var secret = configuration["Jwt:Secret"];
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        if (!string.IsNullOrWhiteSpace(secret))
+        {
+            authenticationBuilder.AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -51,11 +52,17 @@ public static class DependencyInjection
                     ClockSkew = TimeSpan.Zero
                 };
             });
+        }
+        else
+        {
+            throw new InvalidOperationException("JWT secret is not configured.");
+        }
 
         services.AddAuthorizationBuilder()
             .AddPolicy("ReaderOnly", policy => policy.RequireRole(nameof(Role.Reader)))
             .AddPolicy("AdministratorOnly", policy => policy.RequireRole(nameof(Role.Administrator)));
 
         return services;
-    }
+}
+
 }

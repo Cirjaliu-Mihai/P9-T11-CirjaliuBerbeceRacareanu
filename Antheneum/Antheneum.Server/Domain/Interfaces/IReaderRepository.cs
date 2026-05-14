@@ -11,4 +11,5 @@ public interface IReaderRepository
     Task ChangeRoleAsync(int readerId, Role newRole, CancellationToken ct = default);
     Task UpdateProfileAsync(int userId, string? phone, string? address, string? passwordHash, CancellationToken ct = default);
     Task RemoveFromBlacklistAsync(int readerId, CancellationToken ct = default);
+    Task ResolvePenaltyAsync(int penaltyId, CancellationToken ct = default);
 }

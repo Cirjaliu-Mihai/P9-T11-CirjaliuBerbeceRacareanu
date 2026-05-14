@@ -27,13 +27,17 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("https://localhost:52152");
+            policy
+                .WithOrigins("https://localhost:52152")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 });
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(DependencyInjection).Assembly));
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
+
 var app = builder.Build();
 
 app.UseDefaultFiles();

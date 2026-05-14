@@ -20,6 +20,6 @@ public class GetBookAvailabilityHandler : IRequestHandler<GetBookAvailabilityQue
 
         var availability = await _bookRepository.GetAvailabilityAsync(book.BookId, cancellationToken);
 
-        return availability.Select(a => new BookAvailabilityDto(a.CopyId, a.BranchName, a.Status));
+        return availability.Select(a => new BookAvailabilityDto(a.CopyId, a.BranchName, a.Status, a.BorrowerName));
     }
 }

@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Add copies</h2>
+<mat-dialog-content class="editor-dialog-content">
+  <div class="field-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Branch</mat-label>
+      <mat-select [(ngModel)]="branchId">
+        <mat-option *ngFor="let branch of data.branches" [value]="branch.branchId">{{ branch.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Count</mat-label>
+      <input matInput type="number" [(ngModel)]="count" min="1" max="50" placeholder="1" />
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="dialogRef.close()">Cancel</button>
+  <button mat-flat-button type="button" [disabled]="!branchId || count < 1" (click)="submit()">Add copies</button>
+</mat-dialog-actions>

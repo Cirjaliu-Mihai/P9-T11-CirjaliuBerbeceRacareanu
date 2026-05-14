@@ -1,0 +1,22 @@
+:host {}
+
+.search-field {
+  width: 320px;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(65, 105, 225, 0.1);
+  margin-top: 1rem;
+}
+
+.pagination-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  min-width: 120px;
+  text-align: center;
+}

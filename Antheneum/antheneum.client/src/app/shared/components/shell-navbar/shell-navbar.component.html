@@ -1,0 +1,30 @@
+<div class="app-navbar">
+    <a class="brand-mark" routerLink="/" aria-label="Antheneum home">
+        <span class="brand-mark__glyph">A</span>
+        <span class="brand-mark__copy">
+            <span class="brand-mark__eyebrow">{{ workspaceEyebrow }}</span>
+            <strong>{{ workspaceTitle }}</strong>
+        </span>
+    </a>
+
+    <nav class="top-nav" aria-label="Dashboard sections">
+        <a
+            *ngFor="let section of sections"
+            class="nav-chip"
+            [routerLink]="section.path"
+            routerLinkActive="is-active">
+            <span class="nav-chip__label">{{ section.label }}</span>
+            <span class="nav-chip__meta">{{ section.eyebrow }}</span>
+        </a>
+    </nav>
+
+    <div class="profile-anchor" aria-label="Current session">
+        <button mat-icon-button class="profile-btn" type="button" aria-label="Account">
+            <mat-icon>person</mat-icon>
+        </button>
+        <div class="profile-popup">
+            <span class="profile-popup__name">{{ username }}</span>
+            <button mat-stroked-button type="button" (click)="onSignOut()">Sign out</button>
+        </div>
+    </div>
+</div>

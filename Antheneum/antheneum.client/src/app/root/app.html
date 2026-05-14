@@ -1,0 +1,23 @@
+<ng-container *ngIf="auth.isAuthenticated(); else authOutlet">
+<div class="app-shell">
+    <app-shell-navbar
+        [workspaceEyebrow]="workspaceEyebrow"
+        [workspaceTitle]="workspaceTitle"
+        [sections]="sections"
+        [username]="auth.username()"
+        (signOut)="logout()">
+    </app-shell-navbar>
+
+    <main class="workspace">
+        <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
+
+        <div class="router-slot">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>
+</ng-container>
+
+<ng-template #authOutlet>
+    <router-outlet></router-outlet>
+</ng-template>

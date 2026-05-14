@@ -1,5 +1,6 @@
 using AutoMapper;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Enums;
 using Domain.Interfaces;
 using Infrastructure.Persistence.Models;
@@ -118,6 +119,27 @@ public class ReaderRepository : IReaderRepository
             ?? throw new KeyNotFoundException($"Reader with ID {readerId} was not found.");
 
         reader.Isblacklisted = false;
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task ResolvePenaltyAsync(int penaltyId, CancellationToken ct = default)
+    {
+        var penalty = await _context.Unwantedclients
+            .Include(item => item.Reader)
+            .FirstOrDefaultAsync(item => item.Penaltyid == penaltyId, ct)
+            ?? throw new KeyNotFoundException($"Penalty with ID {penaltyId} was not found.");
+
+        if (penalty.Isresolved == true)
+            throw new ConflictException($"Penalty with ID {penaltyId} is already resolved.");
+
+        penalty.Isresolved = true;
+
+        var hasUnresolvedPenalties = await _context.Unwantedclients
+            .AnyAsync(item => item.Readerid == penalty.Readerid
+                && item.Penaltyid != penaltyId
+                && item.Isresolved != true, ct);
+
+        penalty.Reader.Isblacklisted = hasUnresolvedPenalties;
         await _context.SaveChangesAsync(ct);
     }
 }

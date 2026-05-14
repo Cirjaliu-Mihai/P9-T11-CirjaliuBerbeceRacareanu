@@ -1,0 +1,57 @@
+<ng-container *ngIf="store.books$ | async as books">
+  <mat-card class="panel">
+    <div class="panel-heading">
+      <div>
+        <p class="kicker">Books</p>
+        <h3>Catalog management</h3>
+      </div>
+      <div class="toolbar-actions">
+        <mat-chip-set>
+          <mat-chip>{{ store.totalCount }} books</mat-chip>
+        </mat-chip-set>
+        <button mat-flat-button type="button" (click)="openCreateBookDialog()">New book</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search books</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (keydown.enter)="onSearch()" placeholder="Title, author, ISBN…" />
+        <button matSuffix mat-icon-button aria-label="Search" (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
+
+    <div class="catalog-grid">
+      <mat-card *ngFor="let book of books" class="catalog-card">
+        <p>{{ book.isbn }}</p>
+        <strong>{{ book.title }}</strong>
+        <span>{{ book.authors || 'Author pending' }}</span>
+        <small>{{ book.publisher || 'Publisher pending' }}</small>
+        <div class="action-row action-row--spaced">
+          <button mat-stroked-button type="button" (click)="openEditBookDialog(book)">Edit</button>
+          <button mat-stroked-button type="button" color="warn" (click)="confirmDelete(book)">Delete</button>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="pagination-bar" *ngIf="store.totalPages > 1">
+      <button mat-icon-button [disabled]="store.page === 1" (click)="goToPage(1)" aria-label="First page">
+        <mat-icon>first_page</mat-icon>
+      </button>
+      <button mat-icon-button [disabled]="store.page === 1" (click)="goToPage(store.page - 1)" aria-label="Previous page">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="pagination-label">Page {{ store.page }} of {{ store.totalPages }}</span>
+      <button mat-icon-button [disabled]="store.page === store.totalPages" (click)="goToPage(store.page + 1)" aria-label="Next page">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button mat-icon-button [disabled]="store.page === store.totalPages" (click)="goToPage(store.totalPages)" aria-label="Last page">
+        <mat-icon>last_page</mat-icon>
+      </button>
+    </div>
+  </mat-card>
+</ng-container>

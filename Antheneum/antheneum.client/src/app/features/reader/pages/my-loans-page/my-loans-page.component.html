@@ -1,0 +1,74 @@
+<section class="page-grid page-grid--two">
+  <ng-container *ngIf="loans.myLoans$ | async as myLoans">
+    <mat-card class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="kicker">Reader dashboard</p>
+          <h3>My active loans</h3>
+        </div>
+        <mat-chip-set>
+          <mat-chip>{{ myLoans.length }} current items</mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <div class="loan-grid">
+        <mat-card *ngFor="let loan of myLoans" class="loan-card">
+          <p>{{ loan.branchName }}</p>
+          <strong>{{ loan.bookTitle }}</strong>
+          <span>{{ loan.isbn }}</span>
+          <dl>
+            <div>
+              <dt>Borrowed</dt>
+              <dd>{{ loan.loanDate }}</dd>
+            </div>
+            <div>
+              <dt>Due</dt>
+              <dd>{{ loan.dueDate }}</dd>
+            </div>
+            <div>
+              <dt>Renewal</dt>
+              <dd>{{ loan.isRenewed ? 'Already renewed' : 'Eligible' }}</dd>
+            </div>
+          </dl>
+        </mat-card>
+      </div>
+    </mat-card>
+  </ng-container>
+
+  <mat-card class="panel">
+    <div class="panel-heading">
+      <div>
+        <p class="kicker">Reader profile</p>
+        <h3>Profile editing workflow</h3>
+      </div>
+      <button mat-flat-button type="button" (click)="openProfileDialog()">Edit profile</button>
+    </div>
+
+    <div *ngIf="store.currentProfile$ | async as currentProfile; else noProfile" class="profile-card">
+      <strong>{{ currentProfile.username }}</strong>
+      <p>{{ currentProfile.email }}</p>
+      <dl>
+        <div>
+          <dt>Phone</dt>
+          <dd>{{ currentProfile.phone || 'Not set' }}</dd>
+        </div>
+        <div>
+          <dt>Address</dt>
+          <dd>{{ currentProfile.address || 'Not set' }}</dd>
+        </div>
+        <div>
+          <dt>Role</dt>
+          <dd>{{ currentProfile.role }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <ng-template #noProfile>
+      <mat-card class="empty-state">
+        <strong>No profile loaded</strong>
+        <p>The reader profile view will populate when authenticated reader data is available.</p>
+      </mat-card>
+    </ng-template>
+
+  </mat-card>
+</section>

@@ -1,1 +1,358 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* ---------------------------------------------------------------------------
+ * Global tokens, document-level resets, and Material theme overrides only.
+ * Per-component styling lives next to its component (*.component.css).
+ * Generic utility classes used by templates across multiple feature modules
+ * (panel/kicker/toolbar/...) are kept here so emulated view encapsulation
+ * does not block them.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+  --bg: #e9efff;
+  --bg-accent: #d7e2ff;
+  --bg-glow: #9bb4ff;
+  --ink: #0f1b4d;
+  --muted: #566b9c;
+  --royal: #4169e1;
+  --royal-strong: #3154c7;
+  --midnight: #191970;
+  --panel: #ffffff;
+  --panel-strong: #f3f6ff;
+  --line: rgba(65, 105, 225, 0.16);
+  --strong-line: rgba(25, 25, 112, 0.3);
+  --sun: #6f8cff;
+  --mint: #7b93e8;
+  --ocean: #4169e1;
+  --ember: #ff8e7f;
+  --chip: rgba(65, 105, 225, 0.1);
+  --shadow: 0 18px 48px rgba(25, 25, 112, 0.16);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  position: relative;
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url('/library-bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.2;
+}
+
+.mat-typography,
+.mat-mdc-card,
+.mat-mdc-button,
+.mat-mdc-list-item,
+.mat-mdc-chip,
+.mat-mdc-form-field {
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+a { color: inherit; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+td p, td strong, dd, dt { margin: 0; }
+dl { margin: 0; }
+
+input, select {
+  border: 1px solid var(--strong-line);
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+/* Shared surface utilities ------------------------------------------------ */
+
+.panel,
+.status-card,
+.metric-card,
+.task-card,
+.catalog-card,
+.loan-card,
+.stack-card,
+.return-card,
+.empty-state {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-strong));
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+
+.mat-mdc-card.panel,
+.mat-mdc-card.status-card,
+.mat-mdc-card.metric-card,
+.mat-mdc-card.task-card,
+.mat-mdc-card.catalog-card,
+.mat-mdc-card.loan-card,
+.mat-mdc-card.stack-card,
+.mat-mdc-card.return-card,
+.mat-mdc-card.empty-state {
+  background: linear-gradient(180deg, var(--panel), var(--panel-strong));
+}
+
+.panel, .status-card, .empty-state, .return-card { padding: 1.4rem; }
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+.panel-heading h3 { margin: 0; line-height: 1.05; font-size: 1.35rem; }
+
+.kicker {
+  margin: 0 0 0.45rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* Layout utilities -------------------------------------------------------- */
+
+.metric-grid, .grid-two, .task-grid, .catalog-grid, .loan-grid {
+  display: grid;
+  gap: 1rem;
+}
+.page-grid { display: grid; gap: 1rem; }
+.page-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.task-grid, .catalog-grid, .loan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.metric-card { padding: 1.2rem; position: relative; overflow: hidden; }
+.metric-card p { margin: 0 0 0.6rem; color: var(--muted); }
+.metric-card strong { font-size: 2rem; }
+.metric-card[data-tone='sun'] { background: linear-gradient(135deg, #d3e9ff, #ffffff); }
+.metric-card[data-tone='mint'] { background: linear-gradient(135deg, #e1e9ff, #ffffff); }
+.metric-card[data-tone='ocean'] { background: linear-gradient(135deg, #ddebff, #ffffff); }
+.metric-card[data-tone='ember'] { background: linear-gradient(135deg, #ffe9e5, #ffffff); }
+
+.task-card, .catalog-card, .loan-card { padding: 1.1rem; }
+.mat-mdc-card.task-card,
+.mat-mdc-card.catalog-card,
+.mat-mdc-card.loan-card,
+.mat-mdc-card.stack-card,
+.mat-mdc-card.return-card { border-radius: 22px; }
+
+.task-card { text-align: left; background: linear-gradient(180deg, #ffffff, #f3f9ff); }
+
+.task-card span,
+.catalog-card p,
+.loan-card p,
+.stack-card span,
+.stack-card p,
+.table-pill,
+.status-pill,
+.note-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.task-card strong,
+.catalog-card strong,
+.loan-card strong,
+.stack-card strong { display: block; margin: 0.45rem 0; }
+
+.status-pill, .table-pill, .note-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: var(--chip);
+}
+
+.mat-mdc-chip.is-preview {
+  background: rgba(255, 142, 127, 0.16) !important;
+  color: #a14d42 !important;
+}
+
+.status-pill.is-preview, .table-pill.alert {
+  background: rgba(255, 142, 127, 0.16);
+  color: #a14d42;
+}
+
+.toolbar, .toolbar.wide, .return-form, .stack-list, .note-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+.toolbar { align-items: end; }
+
+.toolbar .mat-mdc-form-field,
+.return-form .mat-mdc-form-field,
+.field-grid .mat-mdc-form-field,
+.wide .mat-mdc-form-field { flex: 1 1 180px; min-width: 180px; }
+
+.toolbar-actions, .card-actions, .action-row {
+  display: flex; gap: 0.65rem; align-items: center;
+}
+.card-actions { flex-direction: column; align-items: end; }
+.action-row--spaced { justify-content: space-between; }
+
+.toolbar label, .return-form label {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+
+.stack-list { flex-direction: column; }
+.stack-card {
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.catalog-card {
+  min-height: 170px;
+  background: linear-gradient(165deg, #ffffff, #eaf0ff);
+}
+
+.profile-card { display: grid; gap: 0.75rem; }
+.profile-card dl { display: grid; gap: 0.7rem; }
+.profile-card dl div { display: flex; justify-content: space-between; gap: 1rem; }
+
+.feedback-panel, .inline-feedback { color: var(--muted); }
+
+.role-field { min-width: 160px; }
+
+.editor-dialog-content { padding: 10px; }
+
+.field-grid { display: grid; gap: 0.9rem; margin-bottom: 1rem; }
+.field-grid--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field-grid label { display: grid; gap: 0.4rem; }
+
+.feature-list { display: grid; gap: 0.85rem; padding-left: 1.1rem; color: var(--muted); }
+
+.return-card h4, .empty-state strong { margin: 0 0 0.45rem; }
+.return-card dl, .loan-card dl { display: grid; gap: 0.65rem; margin: 1rem 0; }
+.return-card dl div, .loan-card dl div { display: flex; justify-content: space-between; gap: 1rem; }
+
+.compact-table td:last-child, .compact-table th:last-child { text-align: right; }
+
+.report-helper { margin-bottom: 1rem; color: var(--muted); }
+
+.empty-state p, .feature-list { color: var(--muted); }
+
+.file-field { display: grid; gap: 0.45rem; padding: 0.2rem 0; }
+.file-field__label { font-size: 0.9rem; color: var(--muted); }
+.file-field input[type='file'] {
+  border: 1px dashed var(--strong-line);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: #f5faff;
+}
+
+/* Material theme overrides ----------------------------------------------- */
+
+.mat-mdc-chip,
+.mat-mdc-standard-chip {
+  --mdc-chip-elevated-container-color: rgba(65, 105, 225, 0.12);
+  --mdc-chip-label-text-color: var(--ink);
+  border: 1px solid rgba(65, 105, 225, 0.14);
+}
+
+.mat-mdc-raised-button:not(:disabled),
+.mat-mdc-unelevated-button:not(:disabled) {
+  background: linear-gradient(135deg, var(--royal), var(--midnight)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 22px rgba(25, 25, 112, 0.22);
+}
+
+.mat-mdc-stroked-button:not(:disabled) {
+  border-color: rgba(65, 105, 225, 0.26) !important;
+  background: #ffffff;
+  color: var(--ink) !important;
+}
+
+.mat-mdc-stroked-button.mat-warn { border-color: rgba(244, 111, 82, 0.5); }
+
+.mat-mdc-form-field-subscript-wrapper,
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-error,
+.mat-mdc-select-arrow,
+.mat-mdc-select-value,
+.mdc-floating-label,
+.mat-mdc-input-element,
+.mdc-text-field__input { color: var(--ink) !important; }
+
+.mat-mdc-form-field .mdc-text-field--filled,
+.mat-mdc-form-field .mdc-text-field--outlined {
+  background: #ffffff !important;
+  border-radius: 16px;
+}
+
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-notched-outline__trailing {
+  border-color: rgba(65, 105, 225, 0.24) !important;
+}
+
+.mat-mdc-form-field input.mat-mdc-input-element,
+.mat-mdc-form-field textarea.mat-mdc-input-element {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.mat-mdc-dialog-surface,
+.mat-mdc-menu-panel {
+  background: linear-gradient(180deg, #ffffff, #ebf0ff) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: rgba(25, 25, 112, 0.22);
+}
+
+@media (max-width: 1100px) {
+  .grid-two, .metric-grid, .page-grid--two, .field-grid--wide {
+    grid-template-columns: 1fr;
+  }
+}

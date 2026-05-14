@@ -31,7 +31,12 @@ namespace Infrastructure.Mappings
 
             CreateMap<Bookcopy, BookAvailabilityModel>()
                 .ForMember(dest => dest.CopyId, opt => opt.MapFrom(src => src.Copyid))
-                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name));
+                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
+                .ForMember(dest => dest.BorrowerName, opt => opt.MapFrom(
+                    src => src.Loans
+                        .Where(l => l.Actualreturndate == null)
+                        .Select(l => l.Reader.User.Username)
+                        .FirstOrDefault()));
 
             CreateMap<Loan, LoanModel>()
                 .ForMember(dest => dest.LoanId, opt => opt.MapFrom(src => src.Loanid))
