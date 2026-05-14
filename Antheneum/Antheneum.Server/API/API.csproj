@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\antheneum.client</SpaRoot>
+    <SpaRoot>..\..\antheneum.client</SpaRoot>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:52152</SpaProxyServerUrl>
     <UserSecretsId>eabbc321-3565-43a5-b030-ab0743e553e1</UserSecretsId>
