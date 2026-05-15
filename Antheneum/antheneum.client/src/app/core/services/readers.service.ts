@@ -38,4 +38,8 @@ export class ReadersService {
   renewSubscription() {
     return this.api.post<{ subscriptionExpiry: string }>('readers/me/subscribe', {});
   }
+
+  getMyProfile() {
+    return this.api.get<Reader>('readers/me');
+  }
 }

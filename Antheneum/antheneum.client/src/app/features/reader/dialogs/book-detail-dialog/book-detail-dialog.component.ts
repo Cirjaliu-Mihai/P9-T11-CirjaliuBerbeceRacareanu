@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, Inject, OnInit, inject, signal } from '@angular/core';
+import { catchError, finalize, of } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BooksService } from '../../../../core/services/books.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -23,25 +24,28 @@ export class BookDetailDialogComponent implements OnInit {
   readonly readersStore = inject(ReadersStore);
   private readonly dialog = inject(MatDialog);
 
-  availability: BookAvailability[] = [];
-  isLoading = true;
+  readonly availability = signal<BookAvailability[]>([]);
+  readonly isLoading = signal(true);
 
   constructor(@Inject(MAT_DIALOG_DATA) public readonly book: Book) {}
 
   ngOnInit() {
-    this.booksService.getAvailability(this.book.bookId).subscribe({
-      next: (data) => {
-        this.availability = data;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      },
-    });
+    this.booksService
+      .getAvailability(this.book.bookId)
+      .pipe(
+        catchError(() => of([])),
+        finalize(() => {
+          this.isLoading.set(false);
+        }),
+      )
+      .subscribe((data) => {
+        this.availability.set(data);
+      });
   }
 
   get isReader(): boolean {
-    return this.auth.role() === 'Reader';
+    const role = (this.auth.role() ?? '').toString().toLowerCase();
+    return role === 'reader';
   }
 
   get isSubscribed(): boolean {
@@ -65,13 +69,32 @@ export class BookDetailDialogComponent implements OnInit {
       });
   }
 
-  groupedByBranch(): { branchName: string; copies: BookAvailability[] }[] {
-    const map = new Map<string, BookAvailability[]>();
-    for (const c of this.availability) {
-      const list = map.get(c.branchName) ?? [];
-      list.push(c);
-      map.set(c.branchName, list);
+  borrowFromBranch(branchName: string) {
+    const copy = this.availability().find(
+      (c) => c.branchName === branchName && c.status === 'Available',
+    );
+    if (!copy) return;
+    this.borrowCopy(copy);
+  }
+
+  branchSummaries(): {
+    branchName: string;
+    availableCount: number;
+    totalCount: number;
+  }[] {
+    const map = new Map<string, { available: number; total: number }>();
+    for (const c of this.availability()) {
+      const entry = map.get(c.branchName) ?? { available: 0, total: 0 };
+      entry.total++;
+      if (c.status === 'Available') entry.available++;
+      map.set(c.branchName, entry);
     }
-    return Array.from(map.entries()).map(([branchName, copies]) => ({ branchName, copies }));
+    return Array.from(map.entries())
+      .map(([branchName, { available, total }]) => ({
+        branchName,
+        availableCount: available,
+        totalCount: total,
+      }))
+      .sort((a, b) => b.availableCount - a.availableCount);
   }
 }

@@ -1,7 +1,46 @@
+.branch-group {
+  margin-bottom: 1.5rem;
+}
+
+.branch-group:last-child {
+  margin-bottom: 0;
+}
+
+.branch-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-bottom: 2px solid var(--mat-sys-primary, #3f51b5);
+  margin-bottom: 4px;
+}
+
+.branch-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--mat-sys-primary, #3f51b5);
+}
+
+.branch-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--mat-sys-on-surface);
+  flex: 1;
+}
+
+.branch-count {
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface-variant);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
 .copies-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 520px;
+  min-width: 420px;
 }
 
 .copies-table th,

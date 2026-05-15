@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, of, tap } from 'rxjs';
 import { BlacklistReport } from '../../models/reports/blacklist-report.model';
+import { BlacklistedUser } from '../../models/reports/blacklisted-user.model';
 import { Loan } from '../../models/reader/loan.model';
 import { OverdueReport } from '../../models/reports/overdue-report.model';
 import { ReturnCandidate } from '../../models/reports/return-candidate.model';
 import { ApiService } from '../services/api.service';
 import { LoansService } from '../services/loans.service';
 import { ReadersStore } from './readers.store';
+import { BooksStore } from './books.store';
 
 @Injectable({ providedIn: 'root' })
 export class LoansStore {
@@ -15,6 +17,7 @@ export class LoansStore {
   private readonly blacklistReportSubject = new BehaviorSubject<BlacklistReport[]>([]);
   private readonly selectedReturnSubject = new BehaviorSubject<ReturnCandidate | null>(null);
   private readonly returnCandidatesSubject = new BehaviorSubject<ReturnCandidate[]>([]);
+  private readonly finesSearchSubject = new BehaviorSubject<string>('');
 
   readonly myLoans$ = this.myLoansSubject.asObservable();
   readonly overdueReport$ = this.overdueReportSubject.asObservable();
@@ -22,13 +25,47 @@ export class LoansStore {
   readonly selectedReturn$ = this.selectedReturnSubject.asObservable();
   readonly returnCandidates$ = this.returnCandidatesSubject.asObservable();
 
-  returnSearchTerm = '';
+  readonly blacklistedUsers$: Observable<BlacklistedUser[]> = this.blacklistReportSubject.pipe(
+    map((entries) => {
+      const map = new Map<number, BlacklistedUser>();
+      for (const e of entries) {
+        const existing = map.get(e.readerId);
+        if (existing) {
+          existing.totalAmount += e.penaltyAmount;
+          existing.penaltyCount++;
+        } else {
+          map.set(e.readerId, {
+            readerId: e.readerId,
+            username: e.username,
+            libraryCardNumber: e.libraryCardNumber,
+            totalAmount: e.penaltyAmount,
+            penaltyCount: 1,
+          });
+        }
+      }
+      return Array.from(map.values());
+    }),
+  );
 
-  constructor(
-    private readonly loansService: LoansService,
-    private readonly api: ApiService,
-    private readonly readersStore: ReadersStore,
-  ) {}
+  readonly filteredFines$: Observable<BlacklistReport[]> = combineLatest([
+    this.blacklistReportSubject,
+    this.finesSearchSubject,
+  ]).pipe(
+    map(([entries, term]) => {
+      const lower = term.trim().toLowerCase();
+      return lower ? entries.filter((e) => e.username.toLowerCase().includes(lower)) : entries;
+    }),
+  );
+
+  get finesSearch(): string {
+    return this.finesSearchSubject.value;
+  }
+
+  set finesSearch(value: string) {
+    this.finesSearchSubject.next(value);
+  }
+
+  returnSearchTerm = '';
 
   get myLoans(): Loan[] {
     return this.myLoansSubject.value;
@@ -135,6 +172,15 @@ export class LoansStore {
     );
   }
 
+  resolveAllFinesForReader(readerId: number): Observable<void> {
+    return this.api.put<void>(`blacklist/reader/${readerId}/resolve-all`, {}).pipe(
+      tap(() => {
+        this.blacklistReport = this.blacklistReport.filter((item) => item.readerId !== readerId);
+        this.readersStore.updateBlacklistStatus(readerId, false);
+      }),
+    );
+  }
+
   reset(): void {
     this.myLoans = [];
     this.overdueReport = [];
@@ -142,6 +188,7 @@ export class LoansStore {
     this.selectedReturn = null;
     this.returnCandidates = [];
     this.returnSearchTerm = '';
+    this.finesSearch = '';
   }
 
   loadMyLoans(): Observable<Loan[]> {
@@ -152,10 +199,23 @@ export class LoansStore {
     );
   }
 
+  constructor(
+    private readonly loansService: LoansService,
+    private readonly api: ApiService,
+    private readonly readersStore: ReadersStore,
+    private readonly booksStore: BooksStore,
+  ) {}
+
   borrowBook(copyId: number): Observable<Loan> {
     return this.loansService.createLoan(copyId).pipe(
       tap((loan) => {
         this.myLoans = [...this.myLoans, loan];
+        // refresh books list so availability reflects the borrowed copy
+        try {
+          this.booksStore.loadPage(this.booksStore.page, this.booksStore.searchTerm);
+        } catch {
+          // ignore refresh errors
+        }
       }),
     );
   }

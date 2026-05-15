@@ -40,7 +40,30 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   onSubscribeClick() {
-    this.snackBar.open('Stripe payment integration coming soon!', 'OK', { duration: 4000 });
+    const profile = this.readersStore.currentProfile;
+    if (!profile) {
+      this.snackBar.open('No profile available.', 'OK', { duration: 4000 });
+      return;
+    }
+
+    this.snackBar.open('Processing payment...', undefined, { duration: 2000 });
+
+    this.readersStore.renewSubscription().subscribe({
+      next: (expiry) => {
+        // ReadersStore.renewSubscription updates currentProfile; show confirmation
+        const newExpiry = new Date(this.readersStore.currentProfile?.subscriptionExpiry ?? '');
+        this.snackBar.open(
+          `Payment successful. New expiry: ${newExpiry.toLocaleDateString()}`,
+          'OK',
+          {
+            duration: 5000,
+          },
+        );
+      },
+      error: () => {
+        this.snackBar.open('Payment failed. Please try again later.', 'OK', { duration: 5000 });
+      },
+    });
   }
 
   onPayFinesClick() {

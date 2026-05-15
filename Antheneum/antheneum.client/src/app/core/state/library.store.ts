@@ -16,7 +16,7 @@ import { ReportsStore } from './reports.store';
 export class LibraryStore {
   private viewerRole: AuthRole | null = null;
   private initialized = false;
-  private readonly isLoadingSubject = new BehaviorSubject(true);
+  private readonly isLoadingSubject = new BehaviorSubject(false);
 
   readonly isLoading$ = this.isLoadingSubject.asObservable();
 
@@ -163,7 +163,7 @@ export class LibraryStore {
       books: this.booksService.list('', 1, 6),
       myLoans: this.loansService.myLoans(),
       branches: this.branchesService.list(),
-      readers: this.readersService.list('', ''),
+      myProfile: this.readersService.getMyProfile(),
     })
       .pipe(
         finalize(() => {
@@ -171,12 +171,11 @@ export class LibraryStore {
         }),
       )
       .subscribe({
-        next: ({ books, myLoans, branches, readers }) => {
+        next: ({ books, myLoans, branches, myProfile }) => {
           this.booksStore.books = books.items;
           this.loansStore.myLoans = myLoans;
           this.branchesStore.branches = branches;
-          this.readersStore.readers = readers;
-          this.readersStore.syncCurrentProfile();
+          this.readersStore.currentProfile = myProfile;
           this.reportsStore.reset();
           this.loansStore.overdueReport = [];
           this.loansStore.blacklistReport = [];

@@ -34,7 +34,9 @@ export class AuthService {
   }
 
   defaultRouteFor(role = this.role()) {
-    return role === 'Administrator' ? '/admin/overview' : '/reader/catalog';
+    return (role ?? '').toString().toLowerCase() === 'administrator'
+      ? '/admin/overview'
+      : '/reader/catalog';
   }
 
   login(payload: LoginPayload): Observable<AuthSession> {

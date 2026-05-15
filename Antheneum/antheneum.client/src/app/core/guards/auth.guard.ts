@@ -25,7 +25,10 @@ export function roleGuard(expectedRole: AuthRole): CanActivateFn {
       });
     }
 
-    if (auth.role() === expectedRole) {
+    const currentRole = (auth.role() ?? '').toString().toLowerCase();
+    const expected = (expectedRole ?? '').toString().toLowerCase();
+
+    if (currentRole && currentRole === expected) {
       return true;
     }
 

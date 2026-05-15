@@ -55,8 +55,8 @@
         </tbody>
       </table>
       <mat-card *ngIf="candidates.length === 0 && hasSearched" class="empty-state">
-        <strong>No active overdue loans found</strong>
-        <p>No overdue loans match "{{ store.returnSearchTerm }}".</p>
+        <strong>No active loans found</strong>
+        <p>No loans match "{{ store.returnSearchTerm }}".</p>
       </mat-card>
     </ng-container>
 
@@ -82,43 +82,106 @@
     </mat-card>
   </mat-card>
 
-  <mat-card class="panel">
-    <div class="panel-heading">
-      <div>
-        <p class="kicker">Penalty queue</p>
-        <h3>Blacklist resolution table</h3>
+  <div class="penalties-stack">
+    <mat-card class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="kicker">Blacklist queue</p>
+          <h3>Blacklisted users</h3>
+        </div>
+        <mat-chip-set *ngIf="store.blacklistedUsers$ | async as users">
+          <mat-chip>{{ users.length }} users</mat-chip>
+        </mat-chip-set>
       </div>
-      <mat-chip-set *ngIf="store.blacklistReport$ | async as blacklistReport">
-        <mat-chip>{{ blacklistReport.length }} unresolved</mat-chip>
-      </mat-chip-set>
-    </div>
 
-    <div class="table-wrap compact-table" *ngIf="store.blacklistReport$ | async as blacklistReport">
-      <table>
-        <thead>
-          <tr>
-            <th>Reader</th>
-            <th>Reason</th>
-            <th>Penalty</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let entry of blacklistReport">
-            <td>
-              <strong>{{ entry.username }}</strong>
-              <p>{{ entry.libraryCardNumber }}</p>
-            </td>
-            <td>{{ entry.reason || 'Penalty review pending' }}</td>
-            <td>{{ entry.penaltyAmount | currency }}</td>
-            <td>
-              <button mat-stroked-button type="button" (click)="resolvePenalty(entry)">
-                Resolve penalty
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </mat-card>
+      <div class="table-wrap compact-table" *ngIf="store.blacklistedUsers$ | async as users">
+        <table>
+          <thead>
+            <tr>
+              <th>Reader</th>
+              <th>Card</th>
+              <th>Fines</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.username }}</td>
+              <td>{{ user.libraryCardNumber }}</td>
+              <td>{{ user.penaltyCount }}</td>
+              <td>{{ user.totalAmount | currency }}</td>
+              <td>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="resolveAllFinesForReader(user.readerId, user.username)"
+                >
+                  Resolve all fines
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="users.length === 0">
+              <td colspan="5" class="empty-cell">No blacklisted users.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+    <mat-card class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="kicker">Fine resolution</p>
+          <h3>Individual fines</h3>
+        </div>
+        <mat-chip-set *ngIf="store.filteredFines$ | async as fines">
+          <mat-chip>{{ fines.length }} matching</mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <div class="return-form fines-search">
+        <mat-form-field appearance="outline">
+          <mat-label>Search user</mat-label>
+          <input
+            matInput
+            [ngModel]="store.finesSearch"
+            (ngModelChange)="store.finesSearch = $event"
+            placeholder="Type username"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="table-wrap compact-table" *ngIf="store.filteredFines$ | async as fines">
+        <table>
+          <thead>
+            <tr>
+              <th>Reader</th>
+              <th>Reason</th>
+              <th>Penalty</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of fines">
+              <td>
+                <strong>{{ entry.username }}</strong>
+                <p>{{ entry.libraryCardNumber }}</p>
+              </td>
+              <td>{{ entry.reason || 'Penalty review pending' }}</td>
+              <td>{{ entry.penaltyAmount | currency }}</td>
+              <td>
+                <button mat-stroked-button type="button" (click)="resolvePenalty(entry)">
+                  Resolve penalty
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="fines.length === 0">
+              <td colspan="4" class="empty-cell">No fines match your search.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+  </div>
 </section>

@@ -43,19 +43,21 @@ export class AuthPageComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.auth.login({
-      username: this.login.username.trim(),
-      password: this.login.password,
-    }).subscribe({
-      next: (session) => {
-        this.isSubmitting = false;
-        this.handleAuthSuccess(session);
-      },
-      error: (error) => {
-        this.isSubmitting = false;
-        this.errorMessage = error.error?.message ?? 'Unable to sign in with those credentials.';
-      },
-    });
+    this.auth
+      .login({
+        username: this.login.username.trim(),
+        password: this.login.password,
+      })
+      .subscribe({
+        next: (session) => {
+          this.isSubmitting = false;
+          this.handleAuthSuccess(session);
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          this.errorMessage = error.error?.message ?? 'Unable to sign in with those credentials.';
+        },
+      });
   }
 
   submitRegister() {
@@ -71,30 +73,48 @@ export class AuthPageComponent {
       return;
     }
 
+    // Client-side password policy: min 8 chars, at least one uppercase, one digit and one special char
+    const policy = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!policy.test(this.register.password)) {
+      this.errorMessage =
+        'Password must be at least 8 characters and include an uppercase letter, a number and a special character.';
+      this.successMessage = '';
+      return;
+    }
+
     this.isSubmitting = true;
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.auth.register({
-      username: this.register.username.trim(),
-      email: this.register.email.trim(),
-      password: this.register.password,
-    }).subscribe({
-      next: (session) => {
-        this.isSubmitting = false;
-        this.successMessage = 'Reader account created. Redirecting to your workspace.';
-        this.handleAuthSuccess(session);
-      },
-      error: (error) => {
-        this.isSubmitting = false;
-        this.errorMessage = error.error?.message ?? 'Unable to create that reader account.';
-      },
-    });
+    this.auth
+      .register({
+        username: this.register.username.trim(),
+        email: this.register.email.trim(),
+        password: this.register.password,
+      })
+      .subscribe({
+        next: (session) => {
+          this.isSubmitting = false;
+          this.successMessage = 'Reader account created. Redirecting to your workspace.';
+          this.handleAuthSuccess(session);
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          this.errorMessage = error.error?.message ?? 'Unable to create that reader account.';
+        },
+      });
   }
 
   private handleAuthSuccess(session: AuthSession) {
     const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
-    const target = redirectTo && redirectTo.startsWith('/') ? redirectTo : this.auth.defaultRouteFor(session.role);
+    const target =
+      redirectTo && redirectTo.startsWith('/')
+        ? redirectTo
+        : this.auth.defaultRouteFor(session.role);
     void this.router.navigateByUrl(target);
+  }
+
+  continueAsGuest() {
+    void this.router.navigateByUrl('/reader/catalog');
   }
 }

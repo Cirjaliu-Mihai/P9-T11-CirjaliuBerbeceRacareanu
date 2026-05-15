@@ -1,5 +1,19 @@
 :host {}
 
+.penalties-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.fines-search {
+  margin-bottom: 0.5rem;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .candidates-table {
   width: 100%;
   margin-bottom: 1rem;

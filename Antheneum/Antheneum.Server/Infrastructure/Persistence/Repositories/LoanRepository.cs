@@ -113,7 +113,15 @@ public class LoanRepository : ILoanRepository
         };
 
         _context.Unwantedclients.Add(fine);
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            _context.Entry(fine).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            throw;
+        }
     }
 
     public async Task<decimal> GetTotalUnresolvedFinesAsync(int readerId, CancellationToken cancellationToken = default)
@@ -253,5 +261,27 @@ public class LoanRepository : ILoanRepository
             Reason = u.Reason,
             Amount = u.Penaltyamount ?? 0m,
         });
+    }
+
+    public async Task<LoanModel?> GetActiveLoanByCopyIdAsync(int copyId, CancellationToken cancellationToken = default)
+    {
+        var loan = await _context.Loans
+            .AsNoTracking()
+            .Include(l => l.Copy)
+                .ThenInclude(c => c.Book)
+            .Include(l => l.Copy)
+                .ThenInclude(c => c.Branch)
+            .FirstOrDefaultAsync(l => l.Copyid == copyId && l.Actualreturndate == null, cancellationToken);
+
+        return loan is null ? null : _mapper.Map<LoanModel>(loan);
+    }
+
+    public async Task MarkLoanReturnedAsync(int loanId, DateOnly returnDate, CancellationToken cancellationToken = default)
+    {
+        await _context.Loans
+            .Where(l => l.Loanid == loanId)
+            .ExecuteUpdateAsync(
+                s => s.SetProperty(l => l.Actualreturndate, returnDate),
+                cancellationToken);
     }
 }

@@ -122,6 +122,19 @@ public class ReaderRepository : IReaderRepository
         await _context.SaveChangesAsync(ct);
     }
 
+    public async Task ResolveAllPenaltiesAsync(int readerId, CancellationToken ct = default)
+    {
+        await _context.Unwantedclients
+            .Where(u => u.Readerid == readerId && u.Isresolved != true)
+            .ExecuteUpdateAsync(s => s.SetProperty(u => u.Isresolved, true), ct);
+
+        var reader = await _context.Readers.FindAsync([readerId], ct)
+            ?? throw new KeyNotFoundException($"Reader with ID {readerId} was not found.");
+
+        reader.Isblacklisted = false;
+        await _context.SaveChangesAsync(ct);
+    }
+
     public async Task ResolvePenaltyAsync(int penaltyId, CancellationToken ct = default)
     {
         var penalty = await _context.Unwantedclients

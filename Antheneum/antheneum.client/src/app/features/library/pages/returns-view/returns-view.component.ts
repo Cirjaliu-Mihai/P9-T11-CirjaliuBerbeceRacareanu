@@ -60,4 +60,16 @@ export class ReturnsViewComponent implements OnDestroy {
           this.snackBar.open('Failed to resolve penalty.', 'Dismiss', { duration: 4000 }),
       });
   }
+
+  resolveAllFinesForReader(readerId: number, username: string) {
+    this.store
+      .resolveAllFinesForReader(readerId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: () =>
+          this.snackBar.open(`Failed to resolve all fines for ${username}.`, 'Dismiss', {
+            duration: 4000,
+          }),
+      });
+  }
 }

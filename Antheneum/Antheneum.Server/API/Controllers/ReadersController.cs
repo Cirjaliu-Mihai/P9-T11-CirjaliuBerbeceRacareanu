@@ -1,8 +1,10 @@
 using API.Requests;
 using Application.Features.Readers.ChangeReaderRole;
+using Application.Features.Readers.GetMyProfile;
 using Application.Features.Readers.GetReaders;
 using Application.Features.Readers.RemoveFromBlacklist;
 using Application.Features.Readers.ResolvePenalty;
+using Application.Features.Readers.ResolveAllPenalties;
 using Application.Features.Readers.RenewSubscription;
 using Application.Features.Readers.UpdateMyProfile;
 using MediatR;
@@ -22,6 +24,15 @@ public class ReadersController : ControllerBase
     public ReadersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("me")]
+    [Authorize(Roles = "Reader")]
+    public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        var result = await _mediator.Send(new GetMyProfileQuery(userId), cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet]
@@ -81,6 +92,14 @@ public class ReadersController : ControllerBase
     public async Task<IActionResult> ResolvePenalty(int penaltyId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new ResolvePenaltyQuery(penaltyId), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("/blacklist/reader/{readerId}/resolve-all")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> ResolveAllPenalties(int readerId, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new ResolveAllPenaltiesQuery(readerId), cancellationToken);
         return NoContent();
     }
 

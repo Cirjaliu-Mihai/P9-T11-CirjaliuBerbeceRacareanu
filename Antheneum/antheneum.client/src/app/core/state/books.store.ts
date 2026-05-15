@@ -36,12 +36,12 @@ export class BooksStore {
     this.isLoadingSubject.next(value);
   }
 
-  loadPage(page: number, search = this.searchTerm): void {
+  loadPage(page: number, search = this.searchTerm, author?: string, publisher?: string): void {
     this.page = page;
     this.searchTerm = search;
     this.isLoading = true;
     this.booksService
-      .list(search, page, this.pageSize)
+      .list(search, page, this.pageSize, author, publisher)
       .pipe(
         finalize(() => {
           this.isLoading = false;

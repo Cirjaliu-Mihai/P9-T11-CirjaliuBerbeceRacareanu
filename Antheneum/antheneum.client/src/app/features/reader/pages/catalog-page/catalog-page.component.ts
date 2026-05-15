@@ -1,10 +1,8 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
+import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { BooksService } from '../../../../core/services/books.service';
-import { BranchesService } from '../../../../core/services/branches.service';
 import { Book } from '../../../../models/library/book.model';
-import { Branch } from '../../../../models/library/branch.model';
 import { BookDetailDialogComponent } from '../../dialogs/book-detail-dialog/book-detail-dialog.component';
 
 type FilterMode = 'all' | 'title' | 'author' | 'publisher';
@@ -17,85 +15,73 @@ type FilterMode = 'all' | 'title' | 'author' | 'publisher';
 })
 export class CatalogPageComponent implements OnInit, OnDestroy {
   private readonly booksService = inject(BooksService);
-  private readonly branchesService = inject(BranchesService);
   private readonly dialog = inject(MatDialog);
-  private readonly destroy$ = new Subject<void>();
   private readonly searchInput$ = new Subject<string>();
+  private sub = new Subscription();
 
-  books: Book[] = [];
-  branches: Branch[] = [];
-  isLoading = false;
-  filterMode: FilterMode = 'all';
-  searchTerm = '';
-  totalCount = 0;
-  page = 1;
+  readonly books = signal<Book[]>([]);
+  readonly isLoading = signal(false);
+  readonly totalCount = signal(0);
+  readonly page = signal(1);
   readonly pageSize = 24;
 
+  filterMode: FilterMode = 'all';
+  searchTerm = '';
+
   ngOnInit() {
-    this.branchesService.list().subscribe((branches) => {
-      this.branches = branches;
-    });
-
-    this.searchInput$
-      .pipe(
-        debounceTime(350),
-        distinctUntilChanged(),
-        switchMap((term) => {
-          this.isLoading = true;
-          return this.loadBooks(term, this.page);
-        }),
-        takeUntil(this.destroy$),
-      )
-      .subscribe({
-        next: (result) => {
-          this.books = result.items;
-          this.totalCount = result.totalCount;
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        },
-      });
-
-    this.searchInput$.next('');
+    this.sub.add(
+      this.searchInput$
+        .pipe(debounceTime(350), distinctUntilChanged())
+        .subscribe((term) => this.fetch(term)),
+    );
+    this.fetch('');
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.sub.unsubscribe();
   }
 
   onSearchChange(value: string) {
     this.searchTerm = value;
+    this.page.set(1);
     this.searchInput$.next(value);
   }
 
   setFilterMode(mode: FilterMode) {
     this.filterMode = mode;
-    this.page = 1;
-    this.searchInput$.next(this.searchTerm);
+    this.page.set(1);
+    this.fetch(this.searchTerm);
   }
 
-  loadPage(page: number) {
-    this.page = page;
-    this.searchInput$.next(this.searchTerm);
-  }
-
-  private loadBooks(term: string, page: number) {
-    const search = this.filterMode === 'all' || this.filterMode === 'title' ? term : '';
-    const author = this.filterMode === 'author' ? term : '';
-    const publisher = this.filterMode === 'publisher' ? term : '';
-    return this.booksService.list(search, page, this.pageSize, author, publisher);
+  loadPage(p: number) {
+    this.page.set(p);
+    this.fetch(this.searchTerm);
   }
 
   openBook(book: Book) {
-    this.dialog.open(BookDetailDialogComponent, {
-      width: '640px',
-      data: book,
-    });
+    this.dialog.open(BookDetailDialogComponent, { width: '640px', data: book });
   }
 
   get totalPages(): number {
-    return Math.ceil(this.totalCount / this.pageSize);
+    return Math.ceil(this.totalCount() / this.pageSize);
+  }
+
+  private fetch(term: string) {
+    const search = this.filterMode === 'all' || this.filterMode === 'title' ? term : '';
+    const author = this.filterMode === 'author' ? term : '';
+    const publisher = this.filterMode === 'publisher' ? term : '';
+    this.isLoading.set(true);
+    this.sub.add(
+      this.booksService.list(search, this.page(), this.pageSize, author, publisher).subscribe({
+        next: (result) => {
+          this.books.set(result.items);
+          this.totalCount.set(result.totalCount);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        },
+      }),
+    );
   }
 }
