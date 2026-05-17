@@ -23,6 +23,7 @@ public class StripeCheckoutService : IStripeCheckoutService
         string successUrl,
         string cancelUrl,
         IReadOnlyDictionary<string, string> metadata,
+        string? customerEmail = null,
         CancellationToken cancellationToken = default)
     {
         EnsureApiKeyConfigured();
@@ -49,7 +50,8 @@ public class StripeCheckoutService : IStripeCheckoutService
                 }
             ],
             Metadata = metadata.ToDictionary(kv => kv.Key, kv => kv.Value),
-            PaymentMethodTypes = ["card"]
+            PaymentMethodTypes = ["card"],
+            CustomerEmail = string.IsNullOrWhiteSpace(customerEmail) ? null : customerEmail
         };
 
         var session = await _sessionService.CreateAsync(options, cancellationToken: cancellationToken);

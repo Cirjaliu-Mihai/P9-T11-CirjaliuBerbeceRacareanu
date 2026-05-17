@@ -19,6 +19,7 @@ public interface IStripeCheckoutService
         string successUrl,
         string cancelUrl,
         IReadOnlyDictionary<string, string> metadata,
+        string? customerEmail = null,
         CancellationToken cancellationToken = default);
 
     Task<StripeCheckoutSessionDetails> GetCheckoutSessionAsync(

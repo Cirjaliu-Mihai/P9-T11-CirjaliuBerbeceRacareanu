@@ -13,13 +13,16 @@ public class ConfirmStripeCheckoutHandler : IRequestHandler<ConfirmStripeCheckou
 {
     private readonly IStripeCheckoutService _stripeCheckoutService;
     private readonly IReaderRepository _readerRepository;
+    private readonly IEmailNotificationService _emailNotificationService;
 
     public ConfirmStripeCheckoutHandler(
         IStripeCheckoutService stripeCheckoutService,
-        IReaderRepository readerRepository)
+        IReaderRepository readerRepository,
+        IEmailNotificationService emailNotificationService)
     {
         _stripeCheckoutService = stripeCheckoutService;
         _readerRepository = readerRepository;
+        _emailNotificationService = emailNotificationService;
     }
 
     public async Task<StripeCheckoutConfirmationDto> Handle(ConfirmStripeCheckoutCommand request, CancellationToken cancellationToken)
@@ -38,6 +41,9 @@ public class ConfirmStripeCheckoutHandler : IRequestHandler<ConfirmStripeCheckou
             "fines" => await ConfirmFinesAsync(reader.ReaderId, cancellationToken),
             _ => throw new DomainException("Unsupported purchase type.")
         };
+
+        await SendPaymentConfirmationAsync(reader.Email, normalizedType, session, result, cancellationToken);
+
         return result;
     }
 
@@ -86,5 +92,37 @@ public class ConfirmStripeCheckoutHandler : IRequestHandler<ConfirmStripeCheckou
         return new StripeCheckoutConfirmationDto(
             PurchaseType: "fines",
             Message: "All outstanding fines were marked as paid.");
+    }
+
+    private async Task SendPaymentConfirmationAsync(
+        string recipientEmail,
+        string purchaseType,
+        StripeCheckoutSessionDetails session,
+        StripeCheckoutConfirmationDto confirmation,
+        CancellationToken cancellationToken)
+    {
+        var amount = session.AmountTotal.HasValue
+            ? (session.AmountTotal.Value / 100m).ToString("0.00")
+            : "unknown";
+
+        var subject = purchaseType == "subscription"
+            ? "Subscription payment confirmed"
+            : "Fine payment confirmed";
+
+        await _emailNotificationService.SendAsync(
+            new NotificationEmailRequest(
+                RecipientEmail: recipientEmail,
+                Subject: subject,
+                Body:
+                    $"<p>Your payment was confirmed.</p>" +
+                    $"<p>Type: {confirmation.PurchaseType}</p>" +
+                    $"<p>Amount: {amount} {session.Currency?.ToUpperInvariant()}</p>" +
+                    $"<p>{confirmation.Message}</p>",
+                TemplateKey: purchaseType == "subscription"
+                    ? "subscription_payment_confirmation"
+                    : "fine_payment_confirmation",
+                CorrelationKey: $"stripe:{purchaseType}:{session.SessionId}",
+                Cooldown: TimeSpan.FromDays(36500)),
+            cancellationToken);
     }
 }

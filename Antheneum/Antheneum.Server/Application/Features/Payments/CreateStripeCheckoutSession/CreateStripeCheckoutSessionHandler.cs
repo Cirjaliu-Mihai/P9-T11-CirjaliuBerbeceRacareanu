@@ -53,6 +53,7 @@ public class CreateStripeCheckoutSessionHandler : IRequestHandler<CreateStripeCh
             request.SuccessUrl,
             request.CancelUrl,
             metadata,
+            reader.Email,
             cancellationToken);
 
         return new StripeCheckoutSessionDto(session.SessionId, session.Url);

@@ -30,6 +30,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Reader> Readers { get; set; }
 
+    public virtual DbSet<Notificationlog> Notificationlogs { get; set; }
+
     public virtual DbSet<Unwantedclient> Unwantedclients { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -229,6 +231,38 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("readers_userid_fkey");
+        });
+
+        modelBuilder.Entity<Notificationlog>(entity =>
+        {
+            entity.HasKey(e => e.Notificationid).HasName("notification_logs_pkey");
+
+            entity.ToTable("notification_logs");
+
+            entity.HasIndex(e => new { e.Templatekey, e.Recipientemail, e.Correlationkey }, "notification_logs_template_recipient_correlation_key")
+                .IsUnique();
+
+            entity.Property(e => e.Notificationid).HasColumnName("notificationid");
+            entity.Property(e => e.Templatekey)
+                .HasMaxLength(100)
+                .HasColumnName("templatekey");
+            entity.Property(e => e.Recipientemail)
+                .HasMaxLength(150)
+                .HasColumnName("recipientemail");
+            entity.Property(e => e.Correlationkey)
+                .HasMaxLength(200)
+                .HasColumnName("correlationkey");
+            entity.Property(e => e.Status)
+                .HasMaxLength(30)
+                .HasColumnName("status");
+            entity.Property(e => e.Attempts).HasColumnName("attempts");
+            entity.Property(e => e.Lastattemptat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("lastattemptat");
+            entity.Property(e => e.Sentat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("sentat");
+            entity.Property(e => e.Error).HasColumnName("error");
         });
 
         modelBuilder.Entity<Unwantedclient>(entity =>
