@@ -10,4 +10,5 @@ export interface BlacklistReport {
   reason: string | null;
   penaltyAmount: number;
   isResolved: boolean;
+  isBlacklisted: boolean;
 }

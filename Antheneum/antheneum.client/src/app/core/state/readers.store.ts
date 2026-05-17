@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { ProfileFormValue } from '../../models/reader/profile-form-value.model';
 import { Reader } from '../../models/reader/reader.model';
 import { ReadersService } from '../services/readers.service';
@@ -49,8 +49,9 @@ export class ReadersStore {
       if (!term) {
         return true;
       }
-      return [reader.username, reader.email, reader.phone ?? '', reader.libraryCardNumber]
-        .some((value) => value.toLowerCase().includes(term));
+      return [reader.username, reader.email, reader.phone ?? '', reader.libraryCardNumber].some(
+        (value) => value.toLowerCase().includes(term),
+      );
     });
 
     filtered.sort((left, right) => {
@@ -69,11 +70,13 @@ export class ReadersStore {
 
   syncCurrentProfile(): void {
     if (this.currentProfile) {
-      const updated = this.readers.find((reader) => reader.readerId === this.currentProfile?.readerId);
+      const updated = this.readers.find(
+        (reader) => reader.readerId === this.currentProfile?.readerId,
+      );
       this.currentProfile = updated ?? this.currentProfile;
       return;
     }
-    this.currentProfile = this.readers.find((reader) => reader.role === 'Reader') ?? this.readers[0] ?? null;
+    this.currentProfile = this.readers.find((reader) => reader.role === 'Reader') ?? null;
   }
 
   updateBlacklistStatus(readerId: number, isBlacklisted: boolean): void {
@@ -95,9 +98,9 @@ export class ReadersStore {
     const previousReaders = this.readers;
     const previousCurrentProfile = this.currentProfile;
 
-    this.readers = this.readers.map((item) => item.readerId === reader.readerId
-      ? { ...item, role: nextRole }
-      : item);
+    this.readers = this.readers.map((item) =>
+      item.readerId === reader.readerId ? { ...item, role: nextRole } : item,
+    );
 
     if (this.currentProfile?.readerId === reader.readerId) {
       this.currentProfile = { ...this.currentProfile, role: nextRole };
@@ -136,10 +139,59 @@ export class ReadersStore {
     return this.readersService.updateMyProfile(payload).pipe(
       tap((reader) => {
         this.currentProfile = reader;
-        this.readers = this.readers.map((item) => item.readerId === reader.readerId ? reader : item);
+        this.readers = this.readers.map((item) =>
+          item.readerId === reader.readerId ? reader : item,
+        );
         this.applyReaderFilters();
       }),
     );
+  }
+
+  renewSubscription(): Observable<Reader> {
+    return this.readersService.renewSubscription().pipe(
+      switchMap(() => this.readersService.getMyProfile()),
+      tap((reader) => {
+        this.currentProfile = reader;
+        this.readers = this.readers.map((item) =>
+          item.readerId === reader.readerId ? reader : item,
+        );
+        this.applyReaderFilters();
+      }),
+    );
+  }
+
+  refreshMyProfile(): Observable<Reader> {
+    return this.readersService.getMyProfile().pipe(
+      tap((reader) => {
+        this.currentProfile = reader;
+        this.readers = this.readers.map((item) =>
+          item.readerId === reader.readerId ? reader : item,
+        );
+        this.applyReaderFilters();
+      }),
+    );
+  }
+
+  applySubscriptionExpiry(subscriptionExpiry: string): void {
+    const profile = this.currentProfile;
+    if (!profile) {
+      return;
+    }
+
+    const expiryDate = new Date(subscriptionExpiry);
+    const hasActiveSubscription = !Number.isNaN(expiryDate.getTime()) && expiryDate >= new Date();
+
+    const updatedProfile: Reader = {
+      ...profile,
+      subscriptionExpiry,
+      hasActiveSubscription,
+    };
+
+    this.currentProfile = updatedProfile;
+    this.readers = this.readers.map((item) =>
+      item.readerId === updatedProfile.readerId ? updatedProfile : item,
+    );
+    this.applyReaderFilters();
   }
 
   reset(): void {

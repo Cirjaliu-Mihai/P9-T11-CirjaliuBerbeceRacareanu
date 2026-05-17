@@ -13,4 +13,5 @@ public class BlacklistReportModel
     public string? Reason { get; init; }
     public decimal PenaltyAmount { get; init; }
     public bool IsResolved { get; init; }
+    public bool IsBlacklisted { get; init; }
 }

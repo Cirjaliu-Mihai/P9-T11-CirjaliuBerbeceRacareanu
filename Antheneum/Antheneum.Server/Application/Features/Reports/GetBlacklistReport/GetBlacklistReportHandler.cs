@@ -36,7 +36,8 @@ public class GetBlacklistReportHandler : IRequestHandler<GetBlacklistReportQuery
             item.BranchName,
             item.Reason,
             item.PenaltyAmount,
-            item.IsResolved));
+            item.IsResolved,
+            item.IsBlacklisted));
 
         return new PagedResult<BlacklistReportDto>(dtos, totalCount, page, pageSize);
     }

@@ -11,4 +11,5 @@ public record BlacklistReportDto(
     string? BranchName,
     string? Reason,
     decimal PenaltyAmount,
-    bool IsResolved);
+    bool IsResolved,
+    bool IsBlacklisted);

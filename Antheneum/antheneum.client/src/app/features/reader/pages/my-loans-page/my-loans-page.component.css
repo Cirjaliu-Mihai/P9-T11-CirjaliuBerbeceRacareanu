@@ -1,1 +1,162 @@
-:host {}
+.loans-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kicker {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+
+.profile-card {
+  padding: 1.25rem 1.4rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.profile-header h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.profile-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.section-title.warn { color: #e53935; }
+.section-title.warn { color: #8f4d31; }
+.section-title.muted { color: var(--muted); }
+
+.count-badge {
+  background: rgba(122, 90, 43, 0.12);
+  color: var(--royal);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.count-badge.warn {
+  background: rgba(143, 77, 49, 0.12);
+  color: #8f4d31;
+}
+
+.loans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.loan-card {
+  padding: 1rem;
+}
+
+.loan-card.overdue {
+  border-left: 4px solid #8f4d31;
+}
+
+.loan-branch {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.loan-title {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.loan-isbn {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.loan-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.loan-dates {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.separator { color: rgba(106, 85, 56, 0.35); }
+
+.overdue-chip {
+  font-size: 11px !important;
+}
+
+.past-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.past-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  flex-wrap: wrap;
+  gap: 4px;
+  border: 1px solid var(--line);
+}
+
+.past-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.past-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.empty-msg {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 8px 0;
+}

@@ -26,6 +26,10 @@ public class CreateLoanHandler : IRequestHandler<CreateLoanQuery, LoanDto>
         if (isBlacklisted)
             throw new DomainException("Your account has been blacklisted and cannot borrow books.");
 
+        var isSubscribed = await _loanRepository.IsReaderSubscribedAsync(readerId, cancellationToken);
+        if (!isSubscribed)
+            throw new DomainException("An active subscription is required to borrow books.");
+
         var activeCount = await _loanRepository.GetActiveCountForReaderAsync(readerId, cancellationToken);
         if (activeCount >= 5)
             throw new DomainException("You have reached the maximum of 5 active loans.");

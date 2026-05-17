@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>Copies — {{ book.title }}</h2>
+
+<mat-dialog-content>
+  <mat-progress-bar *ngIf="store.isLoading()" mode="indeterminate"></mat-progress-bar>
+
+  <ng-container *ngIf="!store.isLoading()">
+    <ng-container *ngIf="store.copies().length; else noCopies">
+      <div *ngFor="let group of grouped()" class="branch-group">
+        <div class="branch-header">
+          <mat-icon class="branch-icon">location_on</mat-icon>
+          <span class="branch-name">{{ group.branchName }}</span>
+          <span class="branch-count"
+            >{{ group.copies.length }} {{ group.copies.length === 1 ? 'copy' : 'copies' }}</span
+          >
+        </div>
+
+        <table class="copies-table">
+          <thead>
+            <tr>
+              <th>Copy ID</th>
+              <th>Status</th>
+              <th>Borrower</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let copy of group.copies">
+              <td class="copy-id">#{{ copy.copyId }}</td>
+              <td>
+                <mat-chip-set>
+                  <mat-chip [class]="'status-' + (copy.status ?? 'unknown').toLowerCase()">
+                    {{ copy.status ?? 'Unknown' }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+              <td class="borrower-cell">{{ copy.borrowerName ?? '—' }}</td>
+              <td class="actions-cell">
+                <button
+                  mat-icon-button
+                  type="button"
+                  color="warn"
+                  [disabled]="copy.status === 'Lost'"
+                  matTooltip="Mark as Lost (applies 50 RON fine if currently borrowed)"
+                  (click)="markAsLost(copy.copyId)"
+                >
+                  <mat-icon>report</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  color="warn"
+                  [disabled]="copy.status === 'Borrowed'"
+                  [matTooltip]="
+                    copy.status === 'Borrowed' ? 'Cannot delete a borrowed copy' : 'Delete copy'
+                  "
+                  (click)="deleteCopy(copy.copyId)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <ng-template #noCopies>
+      <p class="empty-hint">No copies yet. Use "Add copies" to add stock.</p>
+    </ng-template>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" mat-dialog-close>Close</button>
+  <button mat-flat-button type="button" (click)="openAddCopiesDialog()">Add copies</button>
+</mat-dialog-actions>

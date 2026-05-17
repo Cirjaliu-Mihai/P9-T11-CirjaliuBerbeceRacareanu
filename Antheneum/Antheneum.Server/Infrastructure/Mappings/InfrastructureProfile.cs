@@ -1,4 +1,5 @@
 using Application.DTOs.Branches;
+using Application.DTOs.Events;
 using Application.DTOs.Loans;
 using Application.DTOs.Readers;
 using AutoMapper;
@@ -47,7 +48,8 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Copy.Branch.Name))
                 .ForMember(dest => dest.LoanDate, opt => opt.MapFrom(src => src.Loandate))
                 .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.Duedate))
-                .ForMember(dest => dest.ActualReturnDate, opt => opt.MapFrom(src => src.Actualreturndate));
+                .ForMember(dest => dest.ActualReturnDate, opt => opt.MapFrom(src => src.Actualreturndate))
+                .ForMember(dest => dest.CopyStatus, opt => opt.MapFrom(src => src.Copy.Status));
 
             CreateMap<LoanModel, LoanDto>();
 
@@ -66,6 +68,7 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
                 .ForMember(dest => dest.LibraryCardNumber, opt => opt.MapFrom(src => src.Librarycardnumber))
                 .ForMember(dest => dest.IsBlacklisted, opt => opt.MapFrom(src => src.Isblacklisted ?? false))
+                .ForMember(dest => dest.SubscriptionExpiry, opt => opt.MapFrom(src => src.Subscriptionexpiry))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
                     src.User.Administrators != null && src.User.Administrators.Any()
                         ? Role.Administrator
@@ -73,6 +76,14 @@ namespace Infrastructure.Mappings
 
             CreateMap<ReaderModel, ReaderDto>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+
+            CreateMap<Event, EventModel>()
+                .ForMember(dest => dest.EventId, opt => opt.MapFrom(src => src.Eventid))
+                .ForMember(dest => dest.BranchId, opt => opt.MapFrom(src => src.Branchid))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.Startdate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.Enddate))
+                .ForMember(dest => dest.MaxSeats, opt => opt.MapFrom(src => src.Availableseats ?? 0))
+                .ForMember(dest => dest.CoverImageUrl, opt => opt.MapFrom(src => src.Coverimageurl));
         }
     }
 }

@@ -1,0 +1,163 @@
+.app-shell {
+  --bg: #efe3c9;
+  --bg-accent: #d9c39d;
+  --bg-glow: #b08a56;
+  --ink: #2f2317;
+  --muted: #6a5538;
+  --royal: #7a5a2b;
+  --royal-strong: #634520;
+  --midnight: #4f371f;
+  --panel: #fbf4e5;
+  --panel-strong: #f2e5cb;
+  --line: rgba(122, 90, 43, 0.2);
+  --strong-line: rgba(79, 55, 31, 0.38);
+  --sun: #bea36b;
+  --mint: #bfa476;
+  --ocean: #8f6f3d;
+  --ember: #8f4d31;
+  --chip: rgba(122, 90, 43, 0.12);
+  --shadow: 0 16px 34px rgba(58, 40, 20, 0.18);
+
+  min-height: 100vh;
+  width: min(100%, 1600px);
+  padding: 0.9rem 1rem 1.2rem;
+  background: linear-gradient(180deg, rgba(247, 239, 224, 0.88) 0%, rgba(239, 224, 192, 0.84) 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+    0 14px 32px rgba(58, 40, 20, 0.12);
+  display: grid;
+  grid-template-rows: max-content minmax(0, 1fr);
+  align-content: start;
+  gap: 0.95rem;
+  max-width: 1540px;
+  margin: 0 auto;
+}
+
+.workspace {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 1.2rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(251, 244, 230, 0.88) 0%, rgba(241, 227, 199, 0.84) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 12px 30px rgba(58, 40, 20, 0.16);
+  backdrop-filter: blur(8px) saturate(118%);
+}
+
+.router-slot {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-height: calc(100vh - 12.5rem);
+}
+
+::ng-deep .workspace .kicker {
+  letter-spacing: 0.14em;
+}
+
+::ng-deep .workspace .metric-card[data-tone='sun'] {
+  background: linear-gradient(135deg, #e9d8b5, #fbf4e6);
+}
+
+::ng-deep .workspace .metric-card[data-tone='mint'] {
+  background: linear-gradient(135deg, #eadab9, #fbf4e6);
+}
+
+::ng-deep .workspace .metric-card[data-tone='ocean'] {
+  background: linear-gradient(135deg, #dfc89e, #fbf4e6);
+}
+
+::ng-deep .workspace .metric-card[data-tone='ember'] {
+  background: linear-gradient(135deg, #e8c4a8, #fbf4e6);
+}
+
+::ng-deep .workspace .catalog-card {
+  background: linear-gradient(165deg, #fbf4e5, #f0e1c2);
+}
+
+::ng-deep .workspace .panel-heading {
+  align-items: center;
+}
+
+::ng-deep .workspace .toolbar,
+::ng-deep .workspace .toolbar-actions,
+::ng-deep .workspace .action-row,
+::ng-deep .workspace .card-actions {
+  align-items: center;
+}
+
+::ng-deep .workspace .card-actions {
+  gap: 0.7rem;
+}
+
+::ng-deep .workspace .table-wrap td,
+::ng-deep .workspace .table-wrap th {
+  vertical-align: middle;
+}
+
+::ng-deep .workspace .mat-mdc-button-base {
+  min-height: 2.35rem;
+  font-weight: 600;
+}
+
+::ng-deep .workspace .mat-mdc-button,
+::ng-deep .workspace .mat-mdc-icon-button {
+  color: var(--ink) !important;
+}
+
+::ng-deep .workspace .mat-mdc-flat-button:not(:disabled),
+::ng-deep .workspace .mat-mdc-unelevated-button:not(:disabled),
+::ng-deep .workspace .mat-mdc-raised-button:not(:disabled) {
+  background: linear-gradient(135deg, var(--royal), var(--midnight));
+  color: #ffffff !important;
+}
+
+::ng-deep .workspace .mat-mdc-stroked-button:not(:disabled),
+::ng-deep .workspace .mat-mdc-outlined-button:not(:disabled) {
+  border-color: var(--strong-line) !important;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink) !important;
+}
+
+::ng-deep .workspace .mat-mdc-icon-button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+::ng-deep .workspace .mat-mdc-icon-button.mat-warn {
+  color: #8f4d31 !important;
+  border-color: rgba(143, 77, 49, 0.35);
+}
+
+::ng-deep .workspace .mat-mdc-card-actions {
+  align-items: center;
+}
+
+::ng-deep .workspace .book-actions {
+  padding: 0.35rem 0.55rem 0.55rem !important;
+  gap: 0.7rem;
+}
+
+@media (max-width: 1100px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    width: 100%;
+    padding: 1rem 0.75rem 1.2rem;
+  }
+
+  .workspace {
+    padding: 0.85rem;
+  }
+
+  .router-slot {
+    min-height: auto;
+  }
+}

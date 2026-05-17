@@ -18,6 +18,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration["PostgresConnection"]));
 
@@ -28,10 +30,15 @@ public static class DependencyInjection
         services.AddScoped<IBranchRepository, BranchRepository>();
         services.AddScoped<IReaderRepository, ReaderRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
+        services.Configure<NotificationOptions>(configuration.GetSection("Notifications"));
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
         services.AddSingleton<IFileStorageService>(_ => new LocalFileStorageService(env));
+        services.AddScoped<IStripeCheckoutService, StripeCheckoutService>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+        services.AddHostedService<LoanReminderBackgroundService>();
 
         var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
         var secret = configuration["Jwt:Secret"];
@@ -63,6 +70,6 @@ public static class DependencyInjection
             .AddPolicy("AdministratorOnly", policy => policy.RequireRole(nameof(Role.Administrator)));
 
         return services;
-}
+    }
 
 }

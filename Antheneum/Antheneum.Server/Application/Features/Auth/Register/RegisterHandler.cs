@@ -14,15 +14,18 @@ namespace Application.Features.Auth.Register
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
         private readonly IPasswordHashingService _passwordHashingService;
+        private readonly IEmailNotificationService _emailNotificationService;
 
         public RegisterHandler(
             IUserRepository userRepository,
             ITokenService tokenService,
-            IPasswordHashingService passwordHashingService)
+            IPasswordHashingService passwordHashingService,
+            IEmailNotificationService emailNotificationService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             _passwordHashingService = passwordHashingService;
+            _emailNotificationService = emailNotificationService;
         }
 
         public async Task<AuthResponse> Handle(RegisterQuery request, CancellationToken cancellationToken)
@@ -61,6 +64,16 @@ namespace Application.Features.Auth.Register
             var refreshToken = _tokenService.GenerateRefreshToken();
             var refreshTokenHash = TokenHasher.Hash(refreshToken);
             await _userRepository.StoreRefreshTokenAsync(createdUser.Id, refreshTokenHash, DateTime.UtcNow.AddDays(7), cancellationToken);
+
+            await _emailNotificationService.SendAsync(
+                new NotificationEmailRequest(
+                    RecipientEmail: createdUser.Email,
+                    Subject: "Welcome to Antheneum",
+                    Body: $"<p>Hello {createdUser.Username},</p><p>Your account is ready and you can start borrowing books.</p>",
+                    TemplateKey: "registration_confirmation",
+                    CorrelationKey: $"registration:{createdUser.Id}",
+                    Cooldown: TimeSpan.FromDays(36500)),
+                cancellationToken);
 
             return new AuthResponse(token, refreshToken, createdUser.Username, createdUser.Role.ToString());
         }

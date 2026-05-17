@@ -1,0 +1,136 @@
+<div class="events-view-container">
+  <div class="view-header">
+    <h1>Events</h1>
+    <button mat-raised-button color="primary" (click)="onCreateEvent()">
+      <mat-icon>add</mat-icon>
+      Create Event
+    </button>
+  </div>
+
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+    <mat-tab label="Upcoming">
+      <div class="tab-content">
+        <div *ngIf="upcomingEvents.length === 0; else eventList" class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <p>No upcoming events</p>
+        </div>
+
+        <ng-template #eventList>
+          <div class="events-table-container">
+            <table mat-table [dataSource]="upcomingEvents" class="events-table">
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="branch">
+                <th mat-header-cell *matHeaderCellDef>Branch</th>
+                <td mat-cell *matCellDef="let row">{{ row.branchName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                <td mat-cell *matCellDef="let row">{{ row.startDate | date: 'short' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="endDate">
+                <th mat-header-cell *matHeaderCellDef>End Date</th>
+                <td mat-cell *matCellDef="let row">{{ row.endDate | date: 'short' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="seats">
+                <th mat-header-cell *matHeaderCellDef>Seats</th>
+                <td mat-cell *matCellDef="let row">{{ row.enrolledCount }}/{{ row.maxSeats }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let row" class="actions-cell">
+                  <div class="actions-group">
+                    <button
+                      mat-icon-button
+                      matTooltip="View Attendees"
+                      (click)="onViewAttendees(row)">
+                      <mat-icon>group</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      matTooltip="Edit"
+                      (click)="onEditEvent(row)"
+                      [disabled]="!canEditDelete(row)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      matTooltip="Delete"
+                      (click)="onDeleteEvent(row)"
+                      [disabled]="!canEditDelete(row)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['title', 'branch', 'startDate', 'endDate', 'seats', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['title', 'branch', 'startDate', 'endDate', 'seats', 'actions']"></tr>
+            </table>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Past">
+      <div class="tab-content">
+        <div *ngIf="pastEvents.length === 0; else pastEventList" class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <p>No past events</p>
+        </div>
+
+        <ng-template #pastEventList>
+          <div class="events-table-container">
+            <table mat-table [dataSource]="pastEvents" class="events-table">
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="branch">
+                <th mat-header-cell *matHeaderCellDef>Branch</th>
+                <td mat-cell *matCellDef="let row">{{ row.branchName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                <td mat-cell *matCellDef="let row">{{ row.startDate | date: 'short' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="endDate">
+                <th mat-header-cell *matHeaderCellDef>End Date</th>
+                <td mat-cell *matCellDef="let row">{{ row.endDate | date: 'short' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="seats">
+                <th mat-header-cell *matHeaderCellDef>Seats</th>
+                <td mat-cell *matCellDef="let row">{{ row.enrolledCount }}/{{ row.maxSeats }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let row" class="actions-cell">
+                  <div class="actions-group actions-group--single">
+                    <button mat-icon-button matTooltip="View Attendees" (click)="onViewAttendees(row)">
+                      <mat-icon>group</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['title', 'branch', 'startDate', 'endDate', 'seats', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['title', 'branch', 'startDate', 'endDate', 'seats', 'actions']"></tr>
+            </table>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

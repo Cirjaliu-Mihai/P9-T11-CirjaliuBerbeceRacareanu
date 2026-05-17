@@ -9,4 +9,5 @@ export interface Loan {
   actualReturnDate: string | null;
   isActive: boolean;
   isRenewed: boolean;
+  copyStatus: string | null;
 }

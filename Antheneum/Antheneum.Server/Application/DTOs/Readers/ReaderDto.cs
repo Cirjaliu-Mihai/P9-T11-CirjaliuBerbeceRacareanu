@@ -9,4 +9,6 @@ public record ReaderDto(
     string? Address,
     string LibraryCardNumber,
     bool IsBlacklisted,
+    DateOnly? SubscriptionExpiry,
+    bool HasActiveSubscription,
     string Role);

@@ -12,4 +12,6 @@ public interface IReaderRepository
     Task UpdateProfileAsync(int userId, string? phone, string? address, string? passwordHash, CancellationToken ct = default);
     Task RemoveFromBlacklistAsync(int readerId, CancellationToken ct = default);
     Task ResolvePenaltyAsync(int penaltyId, CancellationToken ct = default);
+    Task ResolveAllPenaltiesAsync(int readerId, CancellationToken ct = default);
+    Task UpdateSubscriptionAsync(int readerId, DateOnly expiry, CancellationToken ct = default);
 }

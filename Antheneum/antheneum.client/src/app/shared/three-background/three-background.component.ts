@@ -75,7 +75,7 @@ export class ThreeBackgroundComponent implements AfterViewInit, OnDestroy {
   }
 
   private initializeScene(host: HTMLDivElement) {
-    this.scene.background = new THREE.Color(0xe9efff);
+    this.scene.background = new THREE.Color(0xefe1c9);
 
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 200);
     this.camera.position.set(0, 1.6, this.cameraDistance);
@@ -96,24 +96,48 @@ export class ThreeBackgroundComponent implements AfterViewInit, OnDestroy {
   }
 
   private createPlaceholder() {
-    const geometry = new THREE.BoxGeometry(0.85, 2.35, 1.2);
-    const palette = [0x4169e1, 0x6f8cff, 0x7b93e8, 0x9bb4ff, 0x5a74d9, 0xb8c7ff];
+    const spineGeometry = new THREE.BoxGeometry(0.34, 2.05, 1.24);
+    const pageGeometry = new THREE.BoxGeometry(0.24, 1.9, 1.16);
+    const palette = [0xc59f6b, 0x8e5f3a, 0x5f4b33, 0xb38552, 0x7a6242, 0xa56e49];
 
-    Array.from({ length: 9 }, (_, index) => {
+    Array.from({ length: 10 }, (_, index) => {
       const material = new THREE.MeshStandardMaterial({
         color: palette[index % palette.length],
-        metalness: 0.12,
-        roughness: 0.38,
+        metalness: 0.05,
+        roughness: 0.66,
       });
 
-      const mesh = new THREE.Mesh(geometry, material);
-      const angle = (index / 9) * Math.PI * 2;
-      const radius = 2.2;
+      const mesh = new THREE.Mesh(spineGeometry, material);
+      const angle = (index / 10) * Math.PI * 2;
+      const radius = 2.55;
 
-      mesh.position.set(Math.cos(angle) * radius, ((index % 3) - 1) * 0.9, Math.sin(angle) * 1.1);
-      mesh.rotation.set(0.12 * (index % 2), angle, 0.16 * ((index % 3) - 1));
+      const page = new THREE.Mesh(
+        pageGeometry,
+        new THREE.MeshStandardMaterial({
+          color: 0xf3e7d1,
+          metalness: 0.02,
+          roughness: 0.8,
+        }),
+      );
+      page.position.set(0.14, 0, 0);
+      mesh.add(page);
+
+      mesh.position.set(Math.cos(angle) * radius, ((index % 4) - 1.5) * 0.58, Math.sin(angle) * 1.06);
+      mesh.rotation.set(0.05 * ((index % 2) - 0.5), angle + Math.PI / 2, 0.06 * ((index % 3) - 1));
       this.placeholder.add(mesh);
     });
+
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(3.15, 0.07, 14, 80),
+      new THREE.MeshStandardMaterial({
+        color: 0xd2b48c,
+        metalness: 0.04,
+        roughness: 0.72,
+      }),
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = -1.3;
+    this.placeholder.add(ring);
   }
 
   private async loadModel() {
@@ -244,8 +268,9 @@ export class ThreeBackgroundComponent implements AfterViewInit, OnDestroy {
     const elapsed = this.clock.getElapsedTime();
 
     if (!this.loadedModel) {
-      this.placeholder.rotation.y = elapsed * 0.3;
-      this.placeholder.rotation.x = Math.sin(elapsed * 0.4) * 0.08;
+      this.placeholder.rotation.y = elapsed * 0.11;
+      this.placeholder.rotation.x = Math.sin(elapsed * 0.28) * 0.025;
+      this.placeholder.position.y = Math.sin(elapsed * 0.55) * 0.05;
     }
 
     const lerpFactor = 0.04;

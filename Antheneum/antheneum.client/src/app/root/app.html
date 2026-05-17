@@ -1,27 +1,19 @@
-<div *ngIf="auth.isAuthenticated()" class="bg-layer">
-    <app-three-background></app-three-background>
+<div class="bg-layer">
+  <app-three-background></app-three-background>
 </div>
 
-<ng-container *ngIf="auth.isAuthenticated(); else authOutlet">
-<div class="app-shell">
-    <app-shell-navbar
-        [workspaceEyebrow]="workspaceEyebrow"
-        [workspaceTitle]="workspaceTitle"
-        [sections]="sections"
-        [username]="auth.username()"
-        (signOut)="logout()">
-    </app-shell-navbar>
-
+<ng-container *ngIf="auth.isAuthenticated() && auth.role() === 'Administrator'; else directOutlet">
+  <div class="app-shell">
     <main class="workspace">
-        <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
 
-        <div class="router-slot">
-            <router-outlet></router-outlet>
-        </div>
+      <div class="router-slot">
+        <router-outlet></router-outlet>
+      </div>
     </main>
-</div>
+  </div>
 </ng-container>
 
-<ng-template #authOutlet>
-    <router-outlet></router-outlet>
+<ng-template #directOutlet>
+  <router-outlet></router-outlet>
 </ng-template>

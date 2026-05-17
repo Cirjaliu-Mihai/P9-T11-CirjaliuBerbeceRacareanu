@@ -9,6 +9,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ShellNavbarComponent {
   @Input() workspaceEyebrow = '';
   @Input() workspaceTitle = '';
+  @Input() homePath = '/';
   @Input() sections: Array<{ path: string; label: string; eyebrow: string }> = [];
   @Input() username = '';
 

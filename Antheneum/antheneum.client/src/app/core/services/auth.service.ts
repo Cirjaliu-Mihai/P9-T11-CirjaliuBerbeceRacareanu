@@ -34,19 +34,21 @@ export class AuthService {
   }
 
   defaultRouteFor(role = this.role()) {
-    return role === 'Administrator' ? '/admin/overview' : '/reader/loans';
+    return (role ?? '').toString().toLowerCase() === 'administrator'
+      ? '/admin/branches'
+      : '/reader/catalog';
   }
 
   login(payload: LoginPayload): Observable<AuthSession> {
-    return this.api.post<AuthResponseDto>('auth/login', payload).pipe(
-      tap((session) => this.persistSession(session)),
-    );
+    return this.api
+      .post<AuthResponseDto>('auth/login', payload)
+      .pipe(tap((session) => this.persistSession(session)));
   }
 
   register(payload: RegisterPayload): Observable<AuthSession> {
-    return this.api.post<AuthResponseDto>('auth/register', payload).pipe(
-      tap((session) => this.persistSession(session)),
-    );
+    return this.api
+      .post<AuthResponseDto>('auth/register', payload)
+      .pipe(tap((session) => this.persistSession(session)));
   }
 
   logout(): Observable<void> {

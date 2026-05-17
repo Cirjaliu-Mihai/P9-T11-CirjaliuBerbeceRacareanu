@@ -11,9 +11,15 @@ public partial class Event
 
     public string Title { get; set; } = null!;
 
-    public DateTime Date { get; set; }
+    public string? Description { get; set; }
+
+    public DateTime Startdate { get; set; }
+
+    public DateTime Enddate { get; set; }
 
     public int? Availableseats { get; set; }
+
+    public string? Coverimageurl { get; set; }
 
     public virtual Branch Branch { get; set; } = null!;
 

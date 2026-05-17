@@ -19,7 +19,7 @@ public class BookRepository : IBookRepository
     }
 
     public async Task<(IEnumerable<BookModel> Items, int TotalCount)> GetAllAsync(
-        string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+        string? search, string? author, string? publisher, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _context.Books.AsNoTracking();
 
@@ -30,6 +30,18 @@ public class BookRepository : IBookRepository
                 b.Title.ToLower().Contains(term) ||
                 (b.Authors != null && b.Authors.ToLower().Contains(term)) ||
                 (b.Publisher != null && b.Publisher.ToLower().Contains(term)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(author))
+        {
+            var term = author.Trim().ToLower();
+            query = query.Where(b => b.Authors != null && b.Authors.ToLower().Contains(term));
+        }
+
+        if (!string.IsNullOrWhiteSpace(publisher))
+        {
+            var term = publisher.Trim().ToLower();
+            query = query.Where(b => b.Publisher != null && b.Publisher.ToLower().Contains(term));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -119,6 +131,34 @@ public class BookRepository : IBookRepository
             .ProjectTo<BookAvailabilityModel>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
+    public async Task<(IEnumerable<string> Authors, IEnumerable<string> Publishers)> GetFilterOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        var rows = await _context.Books
+            .AsNoTracking()
+            .Select(b => new { b.Authors, b.Publisher })
+            .ToListAsync(cancellationToken);
+
+        var authors = rows
+            .Where(r => !string.IsNullOrWhiteSpace(r.Authors))
+            .SelectMany(r => (r.Authors ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(a => a)
+            .ToList();
+
+        var publishers = rows
+            .Where(r => !string.IsNullOrWhiteSpace(r.Publisher))
+            .Select(r => (r.Publisher ?? string.Empty).Trim())
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(p => p)
+            .ToList();
+
+        return (authors, publishers);
+    }
+
     public async Task AddCopiesAsync(int bookId, int branchId, int count, CancellationToken cancellationToken = default)
     {
         var copies = Enumerable.Range(0, count).Select(_ => new Bookcopy
@@ -141,6 +181,15 @@ public class BookRepository : IBookRepository
             ?? throw new KeyNotFoundException($"Copy with id {copyId} was not found.");
 
         entity.Status = status;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteCopyAsync(int copyId, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.Bookcopies.FindAsync([copyId], cancellationToken)
+            ?? throw new KeyNotFoundException($"Copy with id {copyId} was not found.");
+
+        _context.Bookcopies.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
     }
 

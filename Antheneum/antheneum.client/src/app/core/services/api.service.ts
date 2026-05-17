@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -18,6 +18,11 @@ export class ApiService {
 
   put<T>(path: string, body: unknown): Observable<T> {
     return this.http.put<T>(this.buildUrl(path), body);
+  }
+
+  patch<T>(path: string, body: unknown): Observable<T> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.patch<T>(this.buildUrl(path), JSON.stringify(body), { headers });
   }
 
   delete<T>(path: string): Observable<T> {

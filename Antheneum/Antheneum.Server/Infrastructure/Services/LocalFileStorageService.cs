@@ -42,6 +42,32 @@ public class LocalFileStorageService : IFileStorageService
         return $"/images/books/{fileName}";
     }
 
+    public async Task<string> SaveEventCoverAsync(int eventId, Stream stream, string contentType)
+    {
+        var ext = contentType switch
+        {
+            "image/jpeg" => ".jpg",
+            "image/png" => ".png",
+            "image/webp" => ".webp",
+            "image/gif" => ".gif",
+            _ => ".jpg"
+        };
+
+        var folder = Path.Combine(_webRootPath, "images", "events");
+        Directory.CreateDirectory(folder);
+
+        foreach (var existing in Directory.GetFiles(folder, $"{eventId}.*"))
+            File.Delete(existing);
+
+        var fileName = $"{eventId}{ext}";
+        var filePath = Path.Combine(folder, fileName);
+
+        await using var fileStream = File.Create(filePath);
+        await stream.CopyToAsync(fileStream);
+
+        return $"/images/events/{fileName}";
+    }
+
     public void DeleteBookCover(string isbn)
     {
         var safeIsbn = SanitizeIsbn(isbn);
@@ -51,6 +77,17 @@ public class LocalFileStorageService : IFileStorageService
             return;
 
         foreach (var file in Directory.GetFiles(folder, $"{safeIsbn}.*"))
+            File.Delete(file);
+    }
+
+    public void DeleteEventCover(int eventId)
+    {
+        var folder = Path.Combine(_webRootPath, "images", "events");
+
+        if (!Directory.Exists(folder))
+            return;
+
+        foreach (var file in Directory.GetFiles(folder, $"{eventId}.*"))
             File.Delete(file);
     }
 

@@ -1,0 +1,113 @@
+<section class="profile-page" *ngIf="store.currentProfile$ | async as profile">
+  <div class="profile-header-row">
+    <div class="profile-summary-card">
+      <p class="kicker">Reader profile</p>
+      <h2>{{ profile.username }}</h2>
+      <p class="profile-summary-meta">{{ profile.email }} · Card {{ profile.libraryCardNumber }}</p>
+      <div class="profile-summary-chips">
+        <mat-chip [color]="profile.hasActiveSubscription ? 'primary' : 'warn'" highlighted>
+          {{
+            profile.hasActiveSubscription
+              ? 'Subscribed until ' + (profile.subscriptionExpiry | date: 'mediumDate')
+              : 'No subscription'
+          }}
+        </mat-chip>
+        <mat-chip highlighted color="warn" *ngIf="profile.isBlacklisted">Blacklisted</mat-chip>
+      </div>
+    </div>
+  </div>
+
+  <mat-card class="profile-edit-card">
+    <div class="profile-edit-header">
+      <h3>Update your information</h3>
+    </div>
+
+    <form [formGroup]="form">
+      <div class="field-group contact-fields">
+        <p class="field-group-label">Contact</p>
+        <div class="field-row">
+          <mat-form-field appearance="outline" class="field-full">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" maxlength="20" placeholder="555-0113" />
+          </mat-form-field>
+        </div>
+        <div class="field-row">
+          <mat-form-field appearance="outline" class="field-full">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" maxlength="200" placeholder="7 Finch Yard" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="field-group password-section">
+        <p class="field-group-label">Security</p>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="togglePasswordChange()"
+          [disabled]="isSaving"
+          class="password-toggle-btn"
+        >
+          {{ isChangingPassword ? 'Cancel password change' : 'Change password' }}
+        </button>
+
+        <div *ngIf="isChangingPassword" class="password-fields">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>Current password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="currentPassword"
+                placeholder="Required to set a new password"
+              />
+            </mat-form-field>
+          </div>
+          <div class="field-row">
+            <mat-form-field 
+              appearance="outline" 
+              class="field-full"
+              [class.mismatch]="form.get('confirmCurrentPassword')?.hasError('passwordMismatch') && form.get('confirmCurrentPassword')?.touched"
+            >
+              <mat-label>Confirm current password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="confirmCurrentPassword"
+                placeholder="Re-enter your current password"
+              />
+              <mat-error *ngIf="form.get('confirmCurrentPassword')?.hasError('passwordMismatch')">
+                Passwords do not match
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>New password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="newPassword"
+                minlength="8"
+                placeholder="Must include uppercase, number, special character"
+              />
+              <mat-error *ngIf="form.get('newPassword')?.hasError('passwordStrength') && form.get('newPassword')?.touched">
+                Must be at least 8 characters and include an uppercase letter, a number and a special character
+              </mat-error>
+              <mat-hint *ngIf="!form.get('newPassword')?.hasError('passwordStrength')">Minimum 8 characters.</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-edit-actions">
+        <button mat-stroked-button type="button" (click)="resetFromProfile()" [disabled]="isSaving">
+          Reset
+        </button>
+        <button mat-flat-button type="button" (click)="saveProfile()" [disabled]="isSaving">
+          {{ isSaving ? 'Saving...' : 'Save profile' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</section>

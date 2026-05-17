@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProfileFormValue } from '../../../../models/reader/profile-form-value.model';
 
@@ -13,12 +13,8 @@ interface ProfileDialogData {
   standalone: false,
 })
 export class ProfileEditorDialogComponent {
-  draft: ProfileFormValue;
-
-  constructor(
-    public readonly dialogRef: MatDialogRef<ProfileEditorDialogComponent, ProfileFormValue>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: ProfileDialogData,
-  ) {
-    this.draft = { ...data.value };
-  }
+  readonly dialogRef =
+    inject<MatDialogRef<ProfileEditorDialogComponent, ProfileFormValue>>(MatDialogRef);
+  readonly data = inject<ProfileDialogData>(MAT_DIALOG_DATA);
+  draft: ProfileFormValue = { ...this.data.value };
 }

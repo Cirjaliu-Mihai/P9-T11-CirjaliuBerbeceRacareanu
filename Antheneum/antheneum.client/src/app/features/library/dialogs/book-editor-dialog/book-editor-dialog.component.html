@@ -1,25 +1,42 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
 <mat-dialog-content class="editor-dialog-content">
-  <div class="field-grid field-grid--wide">
-    <mat-form-field appearance="outline">
-      <mat-label>ISBN</mat-label>
-      <input matInput [(ngModel)]="draft.isbn" [disabled]="data.editing" placeholder="978-0143131847" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Title</mat-label>
-      <input matInput [(ngModel)]="draft.title" placeholder="The Library Book" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Authors</mat-label>
-      <input matInput [(ngModel)]="draft.authors" placeholder="Susan Orlean" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Publisher</mat-label>
-      <input matInput [(ngModel)]="draft.publisher" placeholder="Simon &amp; Schuster" />
-    </mat-form-field>
-    <div class="file-field">
-      <span class="file-field__label">Cover image</span>
-      <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+  <div class="editor-layout">
+    <div class="field-grid field-grid--wide">
+      <mat-form-field appearance="outline">
+        <mat-label>ISBN</mat-label>
+        <input matInput [(ngModel)]="draft.isbn" [disabled]="data.editing" placeholder="978-0143131847" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="draft.title" placeholder="The Library Book" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Authors</mat-label>
+        <input matInput [(ngModel)]="draft.authors" placeholder="Susan Orlean" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Publisher</mat-label>
+        <input matInput [(ngModel)]="draft.publisher" placeholder="Simon &amp; Schuster" />
+      </mat-form-field>
+    </div>
+
+    <div class="cover-editor">
+      <p class="cover-editor__label">Cover image</p>
+      <label class="cover-editor__picker" for="book-cover-input">
+        <img
+          *ngIf="displayedImageUrl"
+          [src]="displayedImageUrl"
+          alt="Book cover preview"
+          class="cover-editor__image"
+        />
+        <div *ngIf="!displayedImageUrl" class="cover-editor__placeholder">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Click to choose image</span>
+        </div>
+      </label>
+      <input id="book-cover-input" type="file" accept="image/*" (change)="onFileSelected($event)" class="cover-editor__input" />
+      <p class="cover-editor__hint">Click the image to replace it.</p>
+      <p class="cover-editor__filename" *ngIf="selectedFile">Selected: {{ selectedFile.name }}</p>
     </div>
   </div>
 </mat-dialog-content>

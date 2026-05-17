@@ -1,0 +1,54 @@
+<div class="reader-layout">
+  <header class="reader-header">
+    <div class="header-inner">
+      <a class="brand-mark" routerLink="/reader/catalog" aria-label="Antheneum reader home">
+        <span class="brand-mark__glyph">R</span>
+        <span class="brand-mark__copy">
+          <strong>Antheneum</strong>
+        </span>
+      </a>
+
+      <nav class="top-nav" aria-label="Reader sections">
+        <a mat-button class="nav-chip" routerLink="/reader/catalog" routerLinkActive="is-active">
+          <span class="nav-chip__label">Catalog</span>
+        </a>
+        <a mat-button class="nav-chip" routerLink="/reader/events" routerLinkActive="is-active">
+          <span class="nav-chip__label">Events</span>
+        </a>
+
+        <ng-container *ngIf="isReader">
+          <a mat-button class="nav-chip" routerLink="/reader/loans" routerLinkActive="is-active">
+            <span class="nav-chip__label">My Loans</span>
+          </a>
+          <a mat-button class="nav-chip" routerLink="/reader/checkout" routerLinkActive="is-active">
+            <span class="nav-chip__label">Checkout</span>
+          </a>
+          <a mat-button class="nav-chip" routerLink="/reader/profile" routerLinkActive="is-active">
+            <span class="nav-chip__label">Profile</span>
+          </a>
+        </ng-container>
+      </nav>
+
+      <div class="account-cluster">
+        <ng-container *ngIf="isReader; else guestActions">
+          <div class="account-cluster__profile">
+            <mat-icon>person</mat-icon>
+            <span class="account-cluster__label">{{ auth.username() }}</span>
+          </div>
+          <button mat-stroked-button class="account-cluster__signout" (click)="logout()">Sign out</button>
+        </ng-container>
+        <ng-template #guestActions>
+          <div class="account-cluster__profile">
+            <mat-icon>person_outline</mat-icon>
+            <span class="account-cluster__label">Guest</span>
+          </div>
+          <a mat-stroked-button class="account-cluster__signout" routerLink="/auth">Sign in</a>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <main class="reader-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

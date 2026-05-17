@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BranchFormValue } from '../../../../models/library/branch-form-value.model';
 
@@ -14,12 +14,8 @@ interface BranchDialogData {
   standalone: false,
 })
 export class BranchEditorDialogComponent {
-  draft: BranchFormValue;
-
-  constructor(
-    public readonly dialogRef: MatDialogRef<BranchEditorDialogComponent, BranchFormValue>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: BranchDialogData,
-  ) {
-    this.draft = { ...data.value };
-  }
+  readonly dialogRef =
+    inject<MatDialogRef<BranchEditorDialogComponent, BranchFormValue>>(MatDialogRef);
+  readonly data = inject<BranchDialogData>(MAT_DIALOG_DATA);
+  draft: BranchFormValue = { ...this.data.value };
 }

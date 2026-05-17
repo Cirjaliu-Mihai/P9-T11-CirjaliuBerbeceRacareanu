@@ -1,0 +1,101 @@
+.branch-group {
+  margin-bottom: 1.5rem;
+}
+
+.branch-group:last-child {
+  margin-bottom: 0;
+}
+
+.branch-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-bottom: 2px solid var(--strong-line);
+  margin-bottom: 4px;
+}
+
+.branch-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--ink);
+}
+
+.branch-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+  flex: 1;
+}
+
+.branch-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: var(--chip);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.copies-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 420px;
+}
+
+.copies-table th,
+.copies-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.copies-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copy-id {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.borrower-cell {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.actions-cell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.empty-hint {
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.status-available {
+  --mdc-chip-label-text-color: #1a6b3c;
+  --mdc-chip-container-color: #d4f4e2;
+}
+
+.status-borrowed {
+  --mdc-chip-label-text-color: #7a4e00;
+  --mdc-chip-container-color: #fff0cc;
+}
+
+.status-lost {
+  --mdc-chip-label-text-color: #8b1a1a;
+  --mdc-chip-container-color: #fde8e8;
+}
+
+.status-unknown {
+  --mdc-chip-label-text-color: var(--muted);
+  --mdc-chip-container-color: var(--chip);
+}

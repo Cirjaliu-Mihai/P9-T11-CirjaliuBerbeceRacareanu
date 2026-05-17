@@ -16,7 +16,12 @@
     <div class="toolbar">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Search books</mat-label>
-        <input matInput [(ngModel)]="searchTerm" (keydown.enter)="onSearch()" placeholder="Title, author, ISBN…" />
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (keydown.enter)="onSearch()"
+          placeholder="Title, author, ISBN…"
+        />
         <button matSuffix mat-icon-button aria-label="Search" (click)="onSearch()">
           <mat-icon>search</mat-icon>
         </button>
@@ -26,30 +31,81 @@
     <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
 
     <div class="catalog-grid">
-      <mat-card *ngFor="let book of books" class="catalog-card">
-        <p>{{ book.isbn }}</p>
-        <strong>{{ book.title }}</strong>
-        <span>{{ book.authors || 'Author pending' }}</span>
-        <small>{{ book.publisher || 'Publisher pending' }}</small>
-        <div class="action-row action-row--spaced">
-          <button mat-stroked-button type="button" (click)="openEditBookDialog(book)">Edit</button>
-          <button mat-stroked-button type="button" color="warn" (click)="confirmDelete(book)">Delete</button>
+      <mat-card *ngFor="let book of books" class="book-card">
+        <div class="book-cover">
+          <img *ngIf="book.imgUrl" [src]="book.imgUrl" [alt]="book.title" class="cover-img" />
+          <div *ngIf="!book.imgUrl" class="cover-placeholder">
+            <mat-icon>menu_book</mat-icon>
+          </div>
         </div>
+        <mat-card-content class="book-info">
+          <p class="book-isbn">{{ book.isbn }}</p>
+          <h4 class="book-title">{{ book.title }}</h4>
+          <p class="book-authors">{{ book.authors || 'Unknown author' }}</p>
+          <p class="book-publisher">{{ book.publisher || '\u00a0' }}</p>
+        </mat-card-content>
+        <mat-card-actions class="book-actions">
+          <button
+            mat-icon-button
+            type="button"
+            matTooltip="Manage copies"
+            (click)="openManageCopies(book)"
+          >
+            <mat-icon>inventory_2</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            matTooltip="Edit book"
+            (click)="openEditBookDialog(book)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            color="warn"
+            matTooltip="Delete book"
+            (click)="confirmDelete(book)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
       </mat-card>
     </div>
 
     <div class="pagination-bar" *ngIf="store.totalPages > 1">
-      <button mat-icon-button [disabled]="store.page === 1" (click)="goToPage(1)" aria-label="First page">
+      <button
+        mat-icon-button
+        [disabled]="store.page === 1"
+        (click)="goToPage(1)"
+        aria-label="First page"
+      >
         <mat-icon>first_page</mat-icon>
       </button>
-      <button mat-icon-button [disabled]="store.page === 1" (click)="goToPage(store.page - 1)" aria-label="Previous page">
+      <button
+        mat-icon-button
+        [disabled]="store.page === 1"
+        (click)="goToPage(store.page - 1)"
+        aria-label="Previous page"
+      >
         <mat-icon>chevron_left</mat-icon>
       </button>
       <span class="pagination-label">Page {{ store.page }} of {{ store.totalPages }}</span>
-      <button mat-icon-button [disabled]="store.page === store.totalPages" (click)="goToPage(store.page + 1)" aria-label="Next page">
+      <button
+        mat-icon-button
+        [disabled]="store.page === store.totalPages"
+        (click)="goToPage(store.page + 1)"
+        aria-label="Next page"
+      >
         <mat-icon>chevron_right</mat-icon>
       </button>
-      <button mat-icon-button [disabled]="store.page === store.totalPages" (click)="goToPage(store.totalPages)" aria-label="Last page">
+      <button
+        mat-icon-button
+        [disabled]="store.page === store.totalPages"
+        (click)="goToPage(store.totalPages)"
+        aria-label="Last page"
+      >
         <mat-icon>last_page</mat-icon>
       </button>
     </div>

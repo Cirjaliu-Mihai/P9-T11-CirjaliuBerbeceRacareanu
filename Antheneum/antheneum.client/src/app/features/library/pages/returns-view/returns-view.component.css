@@ -1,1 +1,51 @@
 :host {}
+
+.penalties-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.fines-search {
+  margin-bottom: 0.5rem;
+}
+
+.return-form {
+  align-items: flex-start;
+}
+
+.return-form > button {
+  min-height: 56px;
+}
+
+::ng-deep .return-form .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--muted);
+}
+
+.candidates-table {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.candidates-table td,
+.candidates-table th {
+  padding: 0.58rem 0.8rem;
+  vertical-align: middle;
+}
+
+.candidates-table tbody tr {
+  cursor: pointer;
+}
+
+.candidates-table tbody tr:hover {
+  background: var(--chip);
+}
+
+.candidates-table td:last-child,
+.compact-table td:last-child {
+  text-align: right;
+}
