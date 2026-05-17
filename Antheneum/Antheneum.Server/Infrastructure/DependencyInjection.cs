@@ -18,6 +18,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration["PostgresConnection"]));
 
@@ -28,10 +30,12 @@ public static class DependencyInjection
         services.AddScoped<IBranchRepository, BranchRepository>();
         services.AddScoped<IReaderRepository, ReaderRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
         services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
         services.AddSingleton<IFileStorageService>(_ => new LocalFileStorageService(env));
+        services.AddScoped<IStripeCheckoutService, StripeCheckoutService>();
 
         var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
         var secret = configuration["Jwt:Secret"];

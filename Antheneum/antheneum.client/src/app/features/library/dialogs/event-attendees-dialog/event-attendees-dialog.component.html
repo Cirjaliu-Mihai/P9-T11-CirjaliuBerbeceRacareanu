@@ -1,0 +1,48 @@
+<h1 mat-dialog-title>{{ eventTitle }} - Attendees</h1>
+
+<mat-dialog-content>
+  <div class="attendees-container">
+    <mat-spinner *ngIf="loading" class="spinner"></mat-spinner>
+
+    <div *ngIf="!loading && attendees.length === 0; else attendeeList" class="empty-state">
+      <mat-icon>group_off</mat-icon>
+      <p>No attendees</p>
+    </div>
+
+    <ng-template #attendeeList>
+      <div class="attendees-table-wrap">
+        <table mat-table [dataSource]="attendees" class="attendees-table">
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let row">{{ row.username }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="libraryCardNumber">
+            <th mat-header-cell *matHeaderCellDef>Library Card</th>
+            <td mat-cell *matCellDef="let row">{{ row.libraryCardNumber }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        *ngIf="totalCount > pageSize"
+        [length]="totalCount"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 20]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </ng-template>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

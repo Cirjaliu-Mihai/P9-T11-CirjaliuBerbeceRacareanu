@@ -1,8 +1,9 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
 import { BlacklistReport } from '../../../../models/reports/blacklist-report.model';
 import { LoansStore } from '../../../../core/state/loans.store';
+import { LibraryStore } from '../../../../core/state/library.store';
 
 @Component({
   selector: 'app-returns-view',
@@ -10,14 +11,19 @@ import { LoansStore } from '../../../../core/state/loans.store';
   styleUrl: './returns-view.component.css',
   standalone: false,
 })
-export class ReturnsViewComponent implements OnDestroy {
+export class ReturnsViewComponent implements OnInit, OnDestroy {
   readonly store = inject(LoansStore);
+  private readonly libraryStore = inject(LibraryStore);
 
   isSearching = false;
   hasSearched = false;
 
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroy$ = new Subject<void>();
+
+  ngOnInit() {
+    this.libraryStore.refreshLoansData();
+  }
 
   ngOnDestroy() {
     this.destroy$.next();

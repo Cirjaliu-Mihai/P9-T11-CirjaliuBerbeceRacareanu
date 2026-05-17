@@ -1,4 +1,6 @@
 using API.Requests;
+using Application.Features.Payments.ConfirmStripeCheckout;
+using Application.Features.Payments.CreateStripeCheckoutSession;
 using Application.Features.Readers.ChangeReaderRole;
 using Application.Features.Readers.GetMyProfile;
 using Application.Features.Readers.GetReaders;
@@ -77,6 +79,32 @@ public class ReadersController : ControllerBase
         var userId = GetUserId();
         var newExpiry = await _mediator.Send(new RenewSubscriptionCommand(userId), cancellationToken);
         return Ok(new { subscriptionExpiry = newExpiry });
+    }
+
+    [HttpPost("me/payments/stripe/session")]
+    [Authorize(Roles = "Reader")]
+    public async Task<IActionResult> CreateStripeCheckoutSession(
+        [FromBody] CreateStripeCheckoutSessionRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        var session = await _mediator.Send(
+            new CreateStripeCheckoutSessionCommand(userId, request.PurchaseType, request.SuccessUrl, request.CancelUrl),
+            cancellationToken);
+        return Ok(session);
+    }
+
+    [HttpPost("me/payments/stripe/confirm")]
+    [Authorize(Roles = "Reader")]
+    public async Task<IActionResult> ConfirmStripeCheckout(
+        [FromBody] ConfirmStripeCheckoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        var result = await _mediator.Send(
+            new ConfirmStripeCheckoutCommand(userId, request.PurchaseType, request.SessionId),
+            cancellationToken);
+        return Ok(result);
     }
 
     [HttpDelete("/blacklist/{readerId}")]

@@ -1,0 +1,58 @@
+<div class="events-container">
+  <h1>Events</h1>
+
+  <mat-spinner *ngIf="loading$ | async" class="spinner"></mat-spinner>
+
+  <div *ngIf="error$ | async as error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="(events$ | async)?.length; else emptyState" class="events-grid">
+    <mat-card
+      *ngFor="let event of events$ | async"
+      class="event-card"
+      (click)="onEventClick(event.eventId)">
+      <img
+        *ngIf="event.coverImageUrl"
+        [src]="event.coverImageUrl"
+        class="event-image"
+        alt="Event cover" />
+      <div *ngIf="!event.coverImageUrl" class="event-image placeholder">
+        <mat-icon>image</mat-icon>
+      </div>
+      <mat-card-content>
+        <h2>{{ event.title }}</h2>
+        <p class="description">{{ event.description }}</p>
+        <div class="event-details">
+          <span class="detail">
+            <mat-icon>location_on</mat-icon>
+            {{ event.branchName }}
+          </span>
+          <span class="detail">
+            <mat-icon>event</mat-icon>
+            {{ event.startDate | date: 'short' }}
+          </span>
+          <span class="detail">
+            <mat-icon>people</mat-icon>
+            {{ event.enrolledCount }}/{{ event.maxSeats }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #emptyState>
+    <div *ngIf="!(loading$ | async)" class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <p>No events available</p>
+    </div>
+  </ng-template>
+
+  <mat-paginator
+    *ngIf="((totalCount$ | async) ?? 0) > 10"
+    [length]="((totalCount$ | async) ?? 0)"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 20]"
+    (page)="onPageChange($event.pageIndex + 1)">
+  </mat-paginator>
+</div>

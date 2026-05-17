@@ -4,6 +4,11 @@ import { BookAvailability } from '../../models/library/book-availability.model';
 import { PagedResult } from '../../models/common/paged-result.model';
 import { ApiService } from './api.service';
 
+export interface BookFilterOptions {
+  authors: string[];
+  publishers: string[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class BooksService {
   constructor(private readonly api: ApiService) {}
@@ -21,6 +26,10 @@ export class BooksService {
 
   getAvailability(bookId: number) {
     return this.api.get<BookAvailability[]>(`books/${bookId}/availability`);
+  }
+
+  getFilterOptions() {
+    return this.api.get<BookFilterOptions>('books/filter-options');
   }
 
   create(payload: FormData) {

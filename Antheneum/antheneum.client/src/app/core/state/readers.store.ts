@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { ProfileFormValue } from '../../models/reader/profile-form-value.model';
 import { Reader } from '../../models/reader/reader.model';
 import { ReadersService } from '../services/readers.service';
@@ -147,19 +147,51 @@ export class ReadersStore {
     );
   }
 
-  renewSubscription(): Observable<string> {
+  renewSubscription(): Observable<Reader> {
     return this.readersService.renewSubscription().pipe(
-      tap(({ subscriptionExpiry }) => {
-        if (this.currentProfile) {
-          this.currentProfile = {
-            ...this.currentProfile,
-            subscriptionExpiry,
-            hasActiveSubscription: true,
-          };
-        }
+      switchMap(() => this.readersService.getMyProfile()),
+      tap((reader) => {
+        this.currentProfile = reader;
+        this.readers = this.readers.map((item) =>
+          item.readerId === reader.readerId ? reader : item,
+        );
+        this.applyReaderFilters();
       }),
-      // map to expiry string for callers
-    ) as unknown as Observable<string>;
+    );
+  }
+
+  refreshMyProfile(): Observable<Reader> {
+    return this.readersService.getMyProfile().pipe(
+      tap((reader) => {
+        this.currentProfile = reader;
+        this.readers = this.readers.map((item) =>
+          item.readerId === reader.readerId ? reader : item,
+        );
+        this.applyReaderFilters();
+      }),
+    );
+  }
+
+  applySubscriptionExpiry(subscriptionExpiry: string): void {
+    const profile = this.currentProfile;
+    if (!profile) {
+      return;
+    }
+
+    const expiryDate = new Date(subscriptionExpiry);
+    const hasActiveSubscription = !Number.isNaN(expiryDate.getTime()) && expiryDate >= new Date();
+
+    const updatedProfile: Reader = {
+      ...profile,
+      subscriptionExpiry,
+      hasActiveSubscription,
+    };
+
+    this.currentProfile = updatedProfile;
+    this.readers = this.readers.map((item) =>
+      item.readerId === updatedProfile.readerId ? updatedProfile : item,
+    );
+    this.applyReaderFilters();
   }
 
   reset(): void {

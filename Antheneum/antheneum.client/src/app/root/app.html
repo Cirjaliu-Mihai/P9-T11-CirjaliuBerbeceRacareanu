@@ -2,7 +2,7 @@
   <app-three-background></app-three-background>
 </div>
 
-<ng-container *ngIf="auth.isAuthenticated(); else authOutlet">
+<ng-container *ngIf="auth.isAuthenticated() && auth.role() === 'Administrator'; else directOutlet">
   <div class="app-shell">
     <main class="workspace">
       <mat-progress-bar *ngIf="store.isLoading$ | async" mode="indeterminate"></mat-progress-bar>
@@ -14,6 +14,6 @@
   </div>
 </ng-container>
 
-<ng-template #authOutlet>
+<ng-template #directOutlet>
   <router-outlet></router-outlet>
 </ng-template>

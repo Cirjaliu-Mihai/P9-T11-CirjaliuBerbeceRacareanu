@@ -105,6 +105,21 @@ export class LibraryStore {
     this.loadDashboard();
   }
 
+  refreshLoansData() {
+    if (this.viewerRole !== 'Administrator') return;
+
+    forkJoin({
+      overdue: this.reportsService.overdue(null, 1, 6),
+      blacklist: this.reportsService.blacklist(null, 1, 6),
+    }).subscribe({
+      next: ({ overdue, blacklist }) => {
+        this.loansStore.overdueReport = overdue.items;
+        this.loansStore.blacklistReport = blacklist.items;
+        this.loansStore.lookupReturn();
+      },
+    });
+  }
+
   loadDashboard() {
     if (this.viewerRole === 'Administrator') {
       this.loadAdministratorDashboard();

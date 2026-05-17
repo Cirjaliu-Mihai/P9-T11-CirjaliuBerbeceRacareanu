@@ -21,6 +21,8 @@ public interface IBookRepository
 
     Task<IEnumerable<BookAvailabilityModel>> GetAvailabilityAsync(int bookId, CancellationToken cancellationToken = default);
 
+    Task<(IEnumerable<string> Authors, IEnumerable<string> Publishers)> GetFilterOptionsAsync(CancellationToken cancellationToken = default);
+
     Task AddCopiesAsync(int bookId, int branchId, int count, CancellationToken cancellationToken = default);
 
     Task<bool> CopyExistsAsync(int copyId, CancellationToken cancellationToken = default);

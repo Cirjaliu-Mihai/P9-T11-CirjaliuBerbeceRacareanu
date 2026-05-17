@@ -10,4 +10,5 @@ public record LoanDto(
     DateOnly DueDate,
     DateOnly? ActualReturnDate,
     bool IsActive,
-    bool IsRenewed);
+    bool IsRenewed,
+    string? CopyStatus);

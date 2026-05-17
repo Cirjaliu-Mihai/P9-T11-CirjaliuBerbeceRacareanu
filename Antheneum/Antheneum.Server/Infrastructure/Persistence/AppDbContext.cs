@@ -144,9 +144,16 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Eventid).HasColumnName("eventid");
             entity.Property(e => e.Availableseats).HasColumnName("availableseats");
             entity.Property(e => e.Branchid).HasColumnName("branchid");
-            entity.Property(e => e.Date)
+            entity.Property(e => e.Startdate)
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("date");
+                .HasColumnName("startdate");
+            entity.Property(e => e.Enddate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("enddate");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Coverimageurl)
+                .HasMaxLength(500)
+                .HasColumnName("coverimageurl");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");

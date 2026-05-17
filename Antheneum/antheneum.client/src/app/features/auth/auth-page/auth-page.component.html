@@ -40,15 +40,17 @@
         {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
       </button>
 
-      <button mat-button type="button" class="auth-toggle" (click)="setMode('register')">
-        Create new reader account
-      </button>
+      <div class="auth-secondary-actions">
+        <button mat-stroked-button type="button" class="auth-toggle auth-switch-button" (click)="setMode('register')">
+          <mat-icon>person_add</mat-icon>
+          Create new reader account
+        </button>
 
-      <div class="auth-divider"><span>or</span></div>
-
-      <button mat-stroked-button type="button" class="guest-button" (click)="continueAsGuest()">
-        Continue browsing as guest
-      </button>
+        <button mat-stroked-button type="button" class="auth-switch-button guest-button" (click)="continueAsGuest()">
+          <mat-icon>explore</mat-icon>
+          Continue browsing as guest
+        </button>
+      </div>
     </form>
 
     <ng-template #registerForm>
@@ -109,7 +111,8 @@
           {{ isSubmitting ? 'Creating account...' : 'Create account' }}
         </button>
 
-        <button mat-button type="button" class="auth-toggle" (click)="setMode('login')">
+        <button mat-stroked-button type="button" class="auth-toggle auth-switch-button" (click)="setMode('login')">
+          <mat-icon>arrow_back</mat-icon>
           Back to sign in
         </button>
       </form>

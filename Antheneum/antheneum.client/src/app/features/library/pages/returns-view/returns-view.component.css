@@ -9,9 +9,21 @@
   margin-bottom: 0.5rem;
 }
 
+.return-form {
+  align-items: flex-start;
+}
+
+.return-form > button {
+  min-height: 56px;
+}
+
+::ng-deep .return-form .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
 .empty-cell {
   text-align: center;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--muted);
 }
 
 .candidates-table {
@@ -21,7 +33,8 @@
 
 .candidates-table td,
 .candidates-table th {
-  padding: 0.5rem 0.75rem;
+  padding: 0.58rem 0.8rem;
+  vertical-align: middle;
 }
 
 .candidates-table tbody tr {
@@ -29,5 +42,10 @@
 }
 
 .candidates-table tbody tr:hover {
-  background: var(--mat-sys-surface-variant);
+  background: var(--chip);
+}
+
+.candidates-table td:last-child,
+.compact-table td:last-child {
+  text-align: right;
 }

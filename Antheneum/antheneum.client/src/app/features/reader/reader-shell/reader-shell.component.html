@@ -1,26 +1,48 @@
 <div class="reader-layout">
   <header class="reader-header">
     <div class="header-inner">
-      <a class="brand" routerLink="/reader/catalog">
-        <mat-icon>local_library</mat-icon>
-        <span>Antheneum</span>
+      <a class="brand-mark" routerLink="/reader/catalog" aria-label="Antheneum reader home">
+        <span class="brand-mark__glyph">R</span>
+        <span class="brand-mark__copy">
+          <strong>Antheneum</strong>
+        </span>
       </a>
 
-      <nav class="reader-nav">
-        <a mat-button routerLink="/reader/catalog" routerLinkActive="nav-active">Catalog</a>
+      <nav class="top-nav" aria-label="Reader sections">
+        <a mat-button class="nav-chip" routerLink="/reader/catalog" routerLinkActive="is-active">
+          <span class="nav-chip__label">Catalog</span>
+        </a>
+        <a mat-button class="nav-chip" routerLink="/reader/events" routerLinkActive="is-active">
+          <span class="nav-chip__label">Events</span>
+        </a>
+
         <ng-container *ngIf="isReader">
-          <a mat-button routerLink="/reader/loans" routerLinkActive="nav-active">My Loans</a>
-          <a mat-button routerLink="/reader/checkout" routerLinkActive="nav-active">Checkout</a>
+          <a mat-button class="nav-chip" routerLink="/reader/loans" routerLinkActive="is-active">
+            <span class="nav-chip__label">My Loans</span>
+          </a>
+          <a mat-button class="nav-chip" routerLink="/reader/checkout" routerLinkActive="is-active">
+            <span class="nav-chip__label">Checkout</span>
+          </a>
+          <a mat-button class="nav-chip" routerLink="/reader/profile" routerLinkActive="is-active">
+            <span class="nav-chip__label">Profile</span>
+          </a>
         </ng-container>
       </nav>
 
-      <div class="header-actions">
+      <div class="account-cluster">
         <ng-container *ngIf="isReader; else guestActions">
-          <span class="username-label">{{ auth.username() }}</span>
-          <button mat-stroked-button (click)="logout()">Sign out</button>
+          <div class="account-cluster__profile">
+            <mat-icon>person</mat-icon>
+            <span class="account-cluster__label">{{ auth.username() }}</span>
+          </div>
+          <button mat-stroked-button class="account-cluster__signout" (click)="logout()">Sign out</button>
         </ng-container>
         <ng-template #guestActions>
-          <a mat-flat-button color="primary" routerLink="/auth">Sign in</a>
+          <div class="account-cluster__profile">
+            <mat-icon>person_outline</mat-icon>
+            <span class="account-cluster__label">Guest</span>
+          </div>
+          <a mat-stroked-button class="account-cluster__signout" routerLink="/auth">Sign in</a>
         </ng-template>
       </div>
     </div>

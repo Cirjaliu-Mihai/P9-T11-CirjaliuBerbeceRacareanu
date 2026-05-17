@@ -24,12 +24,12 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   private sessionSubscription?: Subscription;
 
   readonly sections: NavSection[] = [
-    { path: '/admin/overview', label: 'Overview', eyebrow: 'Mission control' },
-    { path: '/admin/branches', label: 'Branches', eyebrow: 'Network and locations' },
-    { path: '/admin/books', label: 'Books', eyebrow: 'Catalog and metadata' },
-    { path: '/admin/users', label: 'Users', eyebrow: 'Profiles and roles' },
-    { path: '/admin/returns', label: 'Loans', eyebrow: 'Loan processing' },
-    { path: '/admin/reports', label: 'Reports', eyebrow: 'Admin analytics' },
+    { path: '/admin/branches', label: 'Branches', eyebrow: '' },
+    { path: '/admin/books', label: 'Books', eyebrow: '' },
+    { path: '/admin/users', label: 'Users', eyebrow: '' },
+    { path: '/admin/returns', label: 'Loans', eyebrow: '' },
+    { path: '/admin/reports', label: 'Reports', eyebrow: '' },
+    { path: '/admin/events', label: 'Events', eyebrow: '' },
   ];
 
   get username(): string {

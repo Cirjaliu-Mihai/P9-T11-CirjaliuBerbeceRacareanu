@@ -1,0 +1,129 @@
+.profile-page {
+  display: grid;
+  gap: 1.2rem;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.profile-header-row {
+  display: grid;
+}
+
+.kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.profile-summary-card {
+  padding: 1.35rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--panel-strong));
+  box-shadow: var(--shadow);
+}
+
+.profile-summary-card h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--ink);
+}
+
+.profile-summary-meta {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.profile-summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.profile-edit-card {
+  padding: 1.35rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.profile-edit-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.field-group {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.field-group-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-row {
+  display: grid;
+}
+
+.field-full {
+  width: 100%;
+}
+
+.password-toggle-btn {
+  justify-self: start;
+  min-width: 11rem;
+}
+
+.password-fields {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--line);
+  margin-top: 0.35rem;
+}
+
+.profile-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  margin-top: 0.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Red error styling */
+::ng-deep .profile-page mat-error {
+  color: #d32f2f !important;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+::ng-deep .profile-page .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-error {
+  color: #d32f2f !important;
+}
+
+@media (max-width: 600px) {
+  .profile-page {
+    gap: 1rem;
+  }
+
+  .profile-edit-actions {
+    flex-direction: column-reverse;
+  }
+
+  .profile-edit-actions button {
+    width: 100%;
+  }
+}

@@ -1,1 +1,38 @@
-:host {}
+:host {
+}
+
+.toolbar {
+  --toolbar-field-width: 280px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.toolbar mat-form-field {
+  width: var(--toolbar-field-width);
+}
+
+.toolbar.wide {
+  align-items: flex-end;
+}
+
+.range-field {
+  width: var(--toolbar-field-width);
+}
+
+::ng-deep .range-field .mat-mdc-form-field-icon-suffix {
+  margin-right: 0.35rem;
+}
+
+::ng-deep .range-field .mat-mdc-form-field-infix {
+  padding-right: 0.2rem;
+}
+
+.generate-btn {
+  height: 56px;
+  padding: 0 24px;
+  align-self: flex-end;
+  white-space: nowrap;
+}

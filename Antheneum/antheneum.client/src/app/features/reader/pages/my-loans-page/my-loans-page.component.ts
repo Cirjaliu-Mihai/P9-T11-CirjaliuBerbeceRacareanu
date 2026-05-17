@@ -1,12 +1,9 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject, of, switchMap, takeUntil } from 'rxjs';
-import { ProfileFormValue } from '../../../../models/reader/profile-form-value.model';
+import { Subject, takeUntil } from 'rxjs';
 import { Loan } from '../../../../models/reader/loan.model';
 import { LoansStore } from '../../../../core/state/loans.store';
 import { ReadersStore } from '../../../../core/state/readers.store';
-import { ProfileEditorDialogComponent } from '../../dialogs/profile-editor-dialog/profile-dialog.component';
 
 @Component({
   selector: 'app-my-loans-page',
@@ -17,7 +14,6 @@ import { ProfileEditorDialogComponent } from '../../dialogs/profile-editor-dialo
 export class MyLoansPageComponent implements OnInit, OnDestroy {
   readonly store = inject(ReadersStore);
   readonly loans = inject(LoansStore);
-  private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroy$ = new Subject<void>();
 
@@ -39,7 +35,11 @@ export class MyLoansPageComponent implements OnInit, OnDestroy {
   }
 
   get pastLoans(): Loan[] {
-    return this.loans.myLoans.filter((l) => !l.isActive);
+    return this.loans.myLoans.filter((l) => !l.isActive && l.copyStatus !== 'Lost');
+  }
+
+  get lostLoans(): Loan[] {
+    return this.loans.myLoans.filter((l) => l.copyStatus === 'Lost');
   }
 
   isOverdue(loan: Loan): boolean {
@@ -63,24 +63,4 @@ export class MyLoansPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  openProfileDialog() {
-    const profile = this.store.currentProfile;
-    const draft: ProfileFormValue = {
-      phone: profile?.phone ?? '',
-      address: profile?.address ?? '',
-      currentPassword: '',
-      newPassword: '',
-    };
-
-    this.dialog
-      .open(ProfileEditorDialogComponent, { width: '720px', data: { value: draft } })
-      .afterClosed()
-      .pipe(
-        switchMap((value?: ProfileFormValue) =>
-          value ? this.store.updateMyProfile(value) : of(null),
-        ),
-        takeUntil(this.destroy$),
-      )
-      .subscribe();
-  }
 }

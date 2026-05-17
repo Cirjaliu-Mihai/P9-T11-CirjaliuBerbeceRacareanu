@@ -11,7 +11,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 4px;
-  border-bottom: 2px solid var(--mat-sys-primary, #3f51b5);
+  border-bottom: 2px solid var(--strong-line);
   margin-bottom: 4px;
 }
 
@@ -19,20 +19,20 @@
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: var(--mat-sys-primary, #3f51b5);
+  color: var(--ink);
 }
 
 .branch-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--mat-sys-on-surface);
+  color: var(--ink);
   flex: 1;
 }
 
 .branch-count {
   font-size: 0.78rem;
-  color: var(--mat-sys-on-surface-variant);
-  background: var(--mat-sys-surface-variant);
+  color: var(--muted);
+  background: var(--chip);
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -47,24 +47,25 @@
 .copies-table td {
   padding: 8px 12px;
   text-align: left;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
 }
 
 .copies-table th {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .copy-id {
   font-variant-numeric: tabular-nums;
-  color: var(--mat-sys-outline);
+  color: var(--muted);
 }
 
 .borrower-cell {
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--muted);
   font-size: 0.875rem;
 }
 
@@ -74,7 +75,7 @@
 }
 
 .empty-hint {
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--muted);
   text-align: center;
   padding: 24px 0;
 }
@@ -95,6 +96,6 @@
 }
 
 .status-unknown {
-  --mdc-chip-label-text-color: var(--mat-sys-on-surface-variant);
-  --mdc-chip-container-color: var(--mat-sys-surface-variant);
+  --mdc-chip-label-text-color: var(--muted);
+  --mdc-chip-container-color: var(--chip);
 }

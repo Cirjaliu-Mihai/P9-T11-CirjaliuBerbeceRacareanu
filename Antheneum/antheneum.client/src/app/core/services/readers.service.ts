@@ -9,6 +9,28 @@ export interface UpdateProfilePayload {
   newPassword: string | null;
 }
 
+export interface CreateStripeCheckoutSessionPayload {
+  purchaseType: 'subscription' | 'fines';
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export interface StripeCheckoutSessionResponse {
+  sessionId: string;
+  url: string;
+}
+
+export interface ConfirmStripeCheckoutPayload {
+  purchaseType: 'subscription' | 'fines';
+  sessionId: string;
+}
+
+export interface StripeCheckoutConfirmationResponse {
+  purchaseType: string;
+  message: string;
+  subscriptionExpiry: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReadersService {
   constructor(private readonly api: ApiService) {}
@@ -37,6 +59,14 @@ export class ReadersService {
 
   renewSubscription() {
     return this.api.post<{ subscriptionExpiry: string }>('readers/me/subscribe', {});
+  }
+
+  createStripeCheckoutSession(payload: CreateStripeCheckoutSessionPayload) {
+    return this.api.post<StripeCheckoutSessionResponse>('readers/me/payments/stripe/session', payload);
+  }
+
+  confirmStripeCheckout(payload: ConfirmStripeCheckoutPayload) {
+    return this.api.post<StripeCheckoutConfirmationResponse>('readers/me/payments/stripe/confirm', payload);
   }
 
   getMyProfile() {

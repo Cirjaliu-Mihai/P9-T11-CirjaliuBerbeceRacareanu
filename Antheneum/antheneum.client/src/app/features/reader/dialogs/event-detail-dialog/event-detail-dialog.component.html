@@ -1,0 +1,65 @@
+<ng-container *ngIf="event$ | async as event">
+  <h1 mat-dialog-title class="dialog-title">{{ event.title }}</h1>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="event-detail-layout">
+      <div class="event-media">
+        <img
+          *ngIf="event.coverImageUrl"
+          [src]="event.coverImageUrl"
+          class="event-image"
+          alt="Event cover" />
+        <div *ngIf="!event.coverImageUrl" class="event-image placeholder">
+          <mat-icon>image</mat-icon>
+        </div>
+      </div>
+
+      <div class="event-info panel">
+        <div class="info-row">
+          <span class="label">Branch</span>
+          <span class="value">{{ event.branchName }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Start</span>
+          <span class="value">{{ event.startDate | date: 'medium' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">End</span>
+          <span class="value">{{ event.endDate | date: 'medium' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Participants</span>
+          <span class="value">
+            <strong>{{ event.enrolledCount }}</strong> / {{ event.maxSeats }}
+          </span>
+        </div>
+
+        <div class="description" *ngIf="event.description">
+          <p>{{ event.description }}</p>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="action-btn action-btn--quiet" (click)="dialogRef.close()">Close</button>
+    <button
+      *ngIf="isReader && event.isEnrolled"
+      mat-stroked-button
+      class="action-btn"
+      color="warn"
+      [disabled]="unenrolling"
+      (click)="onUnenroll()">
+      {{ unenrolling ? 'Un-enrolling...' : 'Un-enroll' }}
+    </button>
+    <button
+      *ngIf="isReader && !event.isEnrolled"
+      mat-raised-button
+      class="action-btn"
+      color="primary"
+      [disabled]="event.isEnrolled || enrolling"
+      (click)="onEnroll()">
+      {{ event.isEnrolled ? 'Already Enrolled' : (enrolling ? 'Enrolling...' : 'Enroll') }}
+    </button>
+  </mat-dialog-actions>
+</ng-container>

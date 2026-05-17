@@ -1,58 +1,84 @@
-<h2 mat-dialog-title>{{ book.title }}</h2>
-<p class="book-meta">{{ book.authors }}</p>
+<h2 mat-dialog-title class="dialog-title">{{ book.title }}</h2>
 
-<mat-dialog-content>
+<mat-dialog-content class="dialog-content">
   <mat-progress-bar *ngIf="isLoading()" mode="indeterminate"></mat-progress-bar>
 
   <ng-container *ngIf="!isLoading()">
+    <section class="book-overview">
+      <div class="cover-wrap">
+        <img *ngIf="book.imgUrl" [src]="book.imgUrl" [alt]="book.title" class="cover-img" />
+        <div *ngIf="!book.imgUrl" class="cover-fallback">
+          <mat-icon>menu_book</mat-icon>
+        </div>
+      </div>
+
+      <div class="book-copy">
+        <p class="kicker">Book details</p>
+        <p class="book-authors">{{ book.authors || 'Unknown author' }}</p>
+        <div class="meta-list">
+          <div class="meta-item">
+            <span>Publisher</span>
+            <strong>{{ book.publisher || 'Unknown publisher' }}</strong>
+          </div>
+          <div class="meta-item">
+            <span>ISBN</span>
+            <strong>{{ book.isbn }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="availability-section">
+      <p class="kicker">Availability by branch</p>
     <ng-container *ngIf="branchSummaries().length > 0; else noAvailability">
-      <div *ngFor="let branch of branchSummaries()" class="branch-row">
-        <div class="branch-info">
-          <mat-icon class="branch-icon">location_on</mat-icon>
-          <span class="branch-name">{{ branch.branchName }}</span>
-          <span
-            class="availability-badge"
-            [class.availability-badge--available]="branch.availableCount > 0"
-            [class.availability-badge--none]="branch.availableCount === 0"
-          >
-            {{ branch.availableCount }} / {{ branch.totalCount }} available
-          </span>
-        </div>
+      <div class="branch-grid">
+        <article *ngFor="let branch of branchSummaries()" class="branch-row">
+          <div class="branch-info">
+            <div class="branch-line">
+              <mat-icon class="branch-icon">location_on</mat-icon>
+              <span class="branch-name">{{ branch.branchName }}</span>
+            </div>
 
-        <div class="branch-action">
-          <!-- Reader with active subscription and copies available -->
-          <button
-            *ngIf="isReader && isSubscribed && branch.availableCount > 0"
-            mat-flat-button
-            color="primary"
-            (click)="borrowFromBranch(branch.branchName)"
-          >
-            Borrow
-          </button>
+            <span
+              class="availability-badge"
+              [class.availability-badge--available]="branch.availableCount > 0"
+              [class.availability-badge--none]="branch.availableCount === 0"
+            >
+              {{ branch.availableCount }} / {{ branch.totalCount }} available
+            </span>
+          </div>
 
-          <!-- Reader with subscription but no copies available here -->
-          <span
-            *ngIf="isReader && isSubscribed && branch.availableCount === 0"
-            class="unavailable-label"
-          >
-            Unavailable
-          </span>
+          <div class="branch-action">
+            <button
+              *ngIf="isReader && isSubscribed && branch.availableCount > 0"
+              mat-flat-button
+              color="primary"
+              (click)="borrowFromBranch(branch.branchName)"
+            >
+              Borrow
+            </button>
 
-          <!-- Reader without subscription -->
-          <a
-            *ngIf="isReader && !isSubscribed"
-            mat-stroked-button
-            routerLink="/reader/checkout"
-            (click)="dialogRef.close()"
-          >
-            Subscribe to borrow
-          </a>
+            <span
+              *ngIf="isReader && isSubscribed && branch.availableCount === 0"
+              class="unavailable-label"
+            >
+              Unavailable
+            </span>
 
-          <!-- Guest -->
-          <a *ngIf="!isReader" mat-stroked-button routerLink="/auth" (click)="dialogRef.close()">
-            Sign in to borrow
-          </a>
-        </div>
+            <a
+              *ngIf="isReader && !isSubscribed"
+              mat-stroked-button
+              routerLink="/reader/checkout"
+              (click)="dialogRef.close()"
+            >
+              Subscribe to borrow
+            </a>
+
+            <a *ngIf="!isReader" mat-stroked-button routerLink="/auth" (click)="dialogRef.close()">
+              Sign in to borrow
+            </a>
+          </div>
+        </article>
       </div>
     </ng-container>
 
@@ -62,6 +88,7 @@
         <p>No copies registered in any branch.</p>
       </div>
     </ng-template>
+    </section>
   </ng-container>
 </mat-dialog-content>
 

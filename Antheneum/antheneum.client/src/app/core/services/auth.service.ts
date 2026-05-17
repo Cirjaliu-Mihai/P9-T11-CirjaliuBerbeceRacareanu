@@ -35,7 +35,7 @@ export class AuthService {
 
   defaultRouteFor(role = this.role()) {
     return (role ?? '').toString().toLowerCase() === 'administrator'
-      ? '/admin/overview'
+      ? '/admin/branches'
       : '/reader/catalog';
   }
 

@@ -1,67 +1,71 @@
 <div class="checkout-page">
   <div class="page-header">
-    <p class="kicker">Checkout</p>
+    <p class="kicker">Account</p>
     <h2>Fees & Payment</h2>
   </div>
 
-  <mat-tab-group animationDuration="200ms">
+  <mat-tab-group animationDuration="200ms" class="checkout-tabs">
     <!-- ── Subscription tab ── -->
     <mat-tab label="Subscription">
       <div class="tab-content">
-        <mat-card class="sub-card">
-          <div class="sub-header">
-            <mat-icon class="sub-icon">card_membership</mat-icon>
-            <div>
+        <mat-card class="checkout-card">
+          <div class="card-header">
+            <mat-icon class="card-icon">card_membership</mat-icon>
+            <div class="card-title-group">
               <h3>Monthly Membership</h3>
-              <p class="sub-price">
+              <p class="card-price">
                 {{ monthlyPrice | currency: 'RON' : 'symbol' : '1.2-2' }} / month
               </p>
             </div>
           </div>
 
-          <mat-divider></mat-divider>
+          <mat-divider class="card-divider"></mat-divider>
 
-          <div class="sub-status" *ngIf="profile">
-            <ng-container *ngIf="profile.hasActiveSubscription; else notSubscribed">
-              <mat-chip color="primary" highlighted>
-                <mat-icon matChipAvatar>check_circle</mat-icon>
-                Active — expires {{ profile.subscriptionExpiry | date: 'mediumDate' }}
-              </mat-chip>
-              <p class="sub-note">
-                Your subscription is active. Click below to renew early and extend by one month.
-              </p>
-            </ng-container>
-            <ng-template #notSubscribed>
-              <mat-chip color="warn" highlighted>
-                <mat-icon matChipAvatar>cancel</mat-icon>
-                No active subscription
-              </mat-chip>
-              <p class="sub-note">
-                Subscribe to unlock borrowing privileges across all library branches.
-              </p>
-            </ng-template>
+          <div class="card-section">
+            <div class="status-badge" *ngIf="profile">
+              <ng-container *ngIf="profile.hasActiveSubscription; else notSubscribed">
+                <mat-chip color="primary" highlighted>
+                  <mat-icon matChipAvatar>check_circle</mat-icon>
+                  Active — expires {{ profile.subscriptionExpiry | date: 'mediumDate' }}
+                </mat-chip>
+                <p class="status-note">
+                  Your subscription is active. Click below to renew early and extend by one month.
+                </p>
+              </ng-container>
+              <ng-template #notSubscribed>
+                <mat-chip color="warn" highlighted>
+                  <mat-icon matChipAvatar>cancel</mat-icon>
+                  No active subscription
+                </mat-chip>
+                <p class="status-note">
+                  Subscribe to unlock borrowing privileges across all library branches.
+                </p>
+              </ng-template>
+            </div>
           </div>
 
-          <div class="sub-benefits">
-            <h4>What's included</h4>
-            <ul>
+          <div class="card-section benefits-section">
+            <p class="section-label">What's included</p>
+            <ul class="benefits-list">
               <li><mat-icon>check</mat-icon> Borrow up to 5 books at a time</li>
               <li><mat-icon>check</mat-icon> Access all library branches</li>
               <li><mat-icon>check</mat-icon> One free renewal per loan</li>
             </ul>
           </div>
 
-          <button
-            mat-flat-button
-            color="primary"
-            class="pay-btn"
-            [matTooltip]="'Stripe payment integration coming soon'"
-            (click)="onSubscribeClick()"
-          >
-            <mat-icon>lock</mat-icon>
-            {{ profile?.hasActiveSubscription ? 'Renew Subscription' : 'Subscribe Now' }}
-            — {{ monthlyPrice | currency: 'RON' : 'symbol' : '1.2-2' }}
-          </button>
+          <div class="card-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              class="action-btn"
+              [disabled]="isRedirectingToStripe"
+              (click)="onSubscribeWithStripeClick()"
+            >
+              <mat-icon>credit_card</mat-icon>
+              {{ profile?.hasActiveSubscription ? 'Renew With Stripe' : 'Activate With Stripe' }}
+              — {{ monthlyPrice | currency: 'RON' : 'symbol' : '1.2-2' }}
+            </button>
+          </div>
         </mat-card>
       </div>
     </mat-tab>
@@ -77,38 +81,42 @@
 
         <ng-container *ngIf="!isLoadingFines">
           <ng-container *ngIf="fines.length > 0; else noFines">
-            <div class="fines-list">
-              <mat-card class="fine-card" *ngFor="let fine of fines">
-                <div class="fine-info">
-                  <strong>{{ fine.bookTitle }}</strong>
-                  <span class="fine-branch">{{ fine.branchName }}</span>
-                  <span class="fine-reason" *ngIf="fine.reason">{{ fine.reason }}</span>
-                </div>
-                <span class="fine-amount">{{
-                  fine.amount | currency: 'RON' : 'symbol' : '1.2-2'
-                }}</span>
-              </mat-card>
+            <div class="fines-section">
+              <div class="fines-list">
+                <mat-card class="fine-item" *ngFor="let fine of fines">
+                  <div class="fine-details">
+                    <div class="fine-title">{{ fine.bookTitle }}</div>
+                    <div class="fine-meta">
+                      <span class="fine-branch">{{ fine.branchName }}</span>
+                      <span class="fine-reason" *ngIf="fine.reason">{{ fine.reason }}</span>
+                    </div>
+                  </div>
+                  <span class="fine-cost">{{ fine.amount | currency: 'RON' : 'symbol' : '1.2-2' }}</span>
+                </mat-card>
+              </div>
+
+              <div class="fines-summary">
+                <span class="summary-label">Total outstanding</span>
+                <span class="summary-amount">{{ totalFines | currency: 'RON' : 'symbol' : '1.2-2' }}</span>
+              </div>
             </div>
 
-            <div class="fines-total">
-              <span>Total outstanding</span>
-              <strong>{{ totalFines | currency: 'RON' : 'symbol' : '1.2-2' }}</strong>
+            <div class="card-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                class="action-btn"
+                [disabled]="isRedirectingToStripe"
+                (click)="onPayFinesWithStripeClick()"
+              >
+                <mat-icon>credit_card</mat-icon>
+                Pay Fines With Stripe — {{ totalFines | currency: 'RON' : 'symbol' : '1.2-2' }}
+              </button>
             </div>
-
-            <button
-              mat-flat-button
-              color="primary"
-              class="pay-btn"
-              [matTooltip]="'Stripe payment integration coming soon'"
-              (click)="onPayFinesClick()"
-            >
-              <mat-icon>lock</mat-icon>
-              Pay Fines — {{ totalFines | currency: 'RON' : 'symbol' : '1.2-2' }}
-            </button>
           </ng-container>
 
           <ng-template #noFines>
-            <div class="good-standing">
+            <div class="empty-state">
               <mat-icon>verified</mat-icon>
               <h3>All clear!</h3>
               <p>You have no outstanding fines.</p>

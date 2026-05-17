@@ -17,7 +17,7 @@
               : 'No subscription'
           }}
         </mat-chip>
-        <button mat-stroked-button type="button" (click)="openProfileDialog()">Edit profile</button>
+        <a mat-stroked-button routerLink="/reader/profile">Manage profile</a>
       </div>
     </div>
   </mat-card>
@@ -87,6 +87,17 @@
           </button>
         </div>
       </mat-card>
+    </div>
+  </section>
+
+  <!-- Lost books -->
+  <section *ngIf="lostLoans.length > 0">
+    <h3 class="section-title warn"><mat-icon>report</mat-icon> Lost Books</h3>
+    <div class="past-list">
+      <div class="past-item" *ngFor="let loan of lostLoans">
+        <span class="past-title">{{ loan.bookTitle }}</span>
+        <span class="past-meta">{{ loan.branchName }} · Reported lost</span>
+      </div>
     </div>
   </section>
 

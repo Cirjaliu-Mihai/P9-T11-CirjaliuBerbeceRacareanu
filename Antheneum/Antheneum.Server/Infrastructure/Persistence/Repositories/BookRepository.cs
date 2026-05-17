@@ -131,6 +131,34 @@ public class BookRepository : IBookRepository
             .ProjectTo<BookAvailabilityModel>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
+    public async Task<(IEnumerable<string> Authors, IEnumerable<string> Publishers)> GetFilterOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        var rows = await _context.Books
+            .AsNoTracking()
+            .Select(b => new { b.Authors, b.Publisher })
+            .ToListAsync(cancellationToken);
+
+        var authors = rows
+            .Where(r => !string.IsNullOrWhiteSpace(r.Authors))
+            .SelectMany(r => (r.Authors ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(a => a)
+            .ToList();
+
+        var publishers = rows
+            .Where(r => !string.IsNullOrWhiteSpace(r.Publisher))
+            .Select(r => (r.Publisher ?? string.Empty).Trim())
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(p => p)
+            .ToList();
+
+        return (authors, publishers);
+    }
+
     public async Task AddCopiesAsync(int bookId, int branchId, int count, CancellationToken cancellationToken = default)
     {
         var copies = Enumerable.Range(0, count).Select(_ => new Bookcopy

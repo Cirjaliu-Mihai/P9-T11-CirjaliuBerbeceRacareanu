@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, of, switchMap, tap } from 'rxjs';
 import { BlacklistReport } from '../../models/reports/blacklist-report.model';
 import { BlacklistedUser } from '../../models/reports/blacklisted-user.model';
 import { Loan } from '../../models/reader/loan.model';
@@ -29,6 +29,7 @@ export class LoansStore {
     map((entries) => {
       const map = new Map<number, BlacklistedUser>();
       for (const e of entries) {
+        if (!e.isBlacklisted) continue;
         const existing = map.get(e.readerId);
         if (existing) {
           existing.totalAmount += e.penaltyAmount;
@@ -225,6 +226,10 @@ export class LoansStore {
       tap((updated) => {
         this.myLoans = this.myLoans.map((l) => (l.loanId === loanId ? updated : l));
       }),
+      // Ensure UI reflects canonical server state after renewal.
+      switchMap((updated) =>
+        this.loadMyLoans().pipe(map((loans) => loans.find((l) => l.loanId === loanId) ?? updated)),
+      ),
     );
   }
 

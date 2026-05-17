@@ -12,7 +12,6 @@ export class App {
   readonly workspaceEyebrow = 'Library Management System';
   readonly workspaceTitle = 'Antheneum';
   readonly sections = [
-    { path: '/admin/overview', label: 'Overview', eyebrow: 'Admin' },
     { path: '/admin/books', label: 'Books', eyebrow: 'Admin' },
     { path: '/admin/readers', label: 'Readers', eyebrow: 'Admin' },
     { path: '/admin/branches', label: 'Branches', eyebrow: 'Admin' },

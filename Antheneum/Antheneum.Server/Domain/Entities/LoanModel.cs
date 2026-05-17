@@ -11,6 +11,7 @@ public class LoanModel
     public DateOnly LoanDate { get; init; }
     public DateOnly DueDate { get; init; }
     public DateOnly? ActualReturnDate { get; init; }
+    public string? CopyStatus { get; init; }
     public bool IsActive => ActualReturnDate is null;
     public bool IsRenewed => DueDate > LoanDate.AddDays(14);
 }

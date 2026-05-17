@@ -128,7 +128,8 @@ public class ReportRepository : IReportRepository
                 BranchName = entry.Loan != null ? entry.Loan.Copy.Branch.Name : null,
                 Reason = entry.Reason,
                 PenaltyAmount = entry.Penaltyamount ?? 0m,
-                IsResolved = entry.Isresolved ?? false
+                IsResolved = entry.Isresolved ?? false,
+                IsBlacklisted = entry.Reader.Isblacklisted ?? false
             });
 
         int totalCount = await query.CountAsync(cancellationToken);

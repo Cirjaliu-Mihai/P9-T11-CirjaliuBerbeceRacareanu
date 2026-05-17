@@ -48,6 +48,7 @@ export class BooksViewComponent implements OnInit, OnDestroy {
         data: {
           title: 'Create book',
           editing: false,
+          imageUrl: null,
           value: { isbn: '', title: '', authors: '', publisher: '' },
         },
       })
@@ -73,6 +74,7 @@ export class BooksViewComponent implements OnInit, OnDestroy {
         data: {
           title: 'Edit book',
           editing: true,
+          imageUrl: book.imgUrl,
           value: {
             isbn: book.isbn,
             title: book.title,

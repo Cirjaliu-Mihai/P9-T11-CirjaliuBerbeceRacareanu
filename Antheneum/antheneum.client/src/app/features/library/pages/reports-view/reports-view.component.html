@@ -10,32 +10,42 @@
   </div>
 
   <div class="toolbar wide">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Report type</mat-label>
-      <mat-select [(ngModel)]="store.selectedReportType">
-        <mat-option *ngFor="let reportType of store.reportTypes" [value]="reportType.id">{{ reportType.label }}</mat-option>
+      <mat-select [value]="store.selectedReportType" (selectionChange)="onReportTypeChange($event.value)">
+        <mat-option *ngFor="let reportType of store.reportTypes; trackBy: trackByReportItemId" [value]="reportType.id">{{ reportType.label }}</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Branch</mat-label>
-      <mat-select [(ngModel)]="store.selectedBranchId">
+      <mat-select [value]="store.selectedBranchId" (selectionChange)="onBranchChange($event.value)">
         <mat-option value="">All branches</mat-option>
-        <mat-option *ngFor="let branch of branches.branches$ | async" [value]="branch.branchId">{{ branch.name }}</mat-option>
+        <mat-option *ngFor="let branch of branches.branches$ | async; trackBy: trackByBranchId" [value]="branch.branchId">{{ branch.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" *ngIf="store.selectedReportType === 'transactions'">
-      <mat-label>From</mat-label>
-      <input matInput type="date" [(ngModel)]="store.reportFrom" />
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" *ngIf="store.selectedReportType === 'transactions'" class="range-field">
+      <mat-label>Transaction period</mat-label>
+      <mat-date-range-input [rangePicker]="transactionRangePicker">
+        <input
+          matStartDate
+          [value]="transactionFromDate"
+          placeholder="From"
+          (dateChange)="onFromDateChange($event.value)"
+        />
+        <input
+          matEndDate
+          [value]="transactionToDate"
+          placeholder="To"
+          (dateChange)="onToDateChange($event.value)"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="transactionRangePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #transactionRangePicker></mat-date-range-picker>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" *ngIf="store.selectedReportType === 'transactions'">
-      <mat-label>To</mat-label>
-      <input matInput type="date" [(ngModel)]="store.reportTo" />
-    </mat-form-field>
-
-    <button mat-flat-button type="button" (click)="store.generateReport()">Generate</button>
+    <button mat-flat-button type="button" (click)="store.generateReport()" class="generate-btn">Generate</button>
   </div>
 
   <div class="report-helper">
@@ -60,7 +70,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.inventoryReport$ | async">
+        <tr *ngFor="let row of store.inventoryReport$ | async; trackBy: trackByReportItemId">
           <td>{{ row.branchName }}</td>
           <td>{{ row.title }}</td>
           <td>{{ row.isbn }}</td>
@@ -83,7 +93,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of loans.overdueReport$ | async">
+        <tr *ngFor="let row of loans.overdueReport$ | async; trackBy: trackByLoanId">
           <td>{{ row.username }}</td>
           <td>{{ row.bookTitle }}</td>
           <td>{{ row.branchName }}</td>
@@ -105,7 +115,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of loans.blacklistReport$ | async">
+        <tr *ngFor="let row of loans.blacklistReport$ | async; trackBy: trackByReportItemId">
           <td>{{ row.username }}</td>
           <td>{{ row.reason || 'Review needed' }}</td>
           <td>{{ row.branchName || 'Not linked' }}</td>
@@ -131,7 +141,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of store.transactionReport$ | async">
+        <tr *ngFor="let row of store.transactionReport$ | async; trackBy: trackByLoanId">
           <td>#{{ row.loanId }}</td>
           <td>{{ row.username }}</td>
           <td>{{ row.bookTitle }}</td>

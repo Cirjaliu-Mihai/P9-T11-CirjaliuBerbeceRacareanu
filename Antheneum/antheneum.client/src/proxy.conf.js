@@ -16,6 +16,7 @@ const PROXY_CONFIG = [
       "/books",
       "/branches",
       "/copies",
+      "/events",
       "/loans",
       "/readers",
       "/blacklist",

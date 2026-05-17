@@ -2,6 +2,7 @@ using Application.Features.Books.AddCopy;
 using Application.Features.Books.CreateBook;
 using Application.Features.Books.DeleteBook;
 using Application.Features.Books.GetBookAvailability;
+using Application.Features.Books.GetBookFilterOptions;
 using Application.Features.Books.GetBooks;
 using Application.Features.Books.UpdateBook;
 using API.Requests;
@@ -41,6 +42,14 @@ public class BooksController : ControllerBase
     public async Task<IActionResult> GetAvailability(int id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetBookAvailabilityQuery(id), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("filter-options")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetFilterOptions(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetBookFilterOptionsQuery(), cancellationToken);
         return Ok(result);
     }
 
